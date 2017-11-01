@@ -68,7 +68,16 @@ class Vector:
 
         return Vector(subs_components)
 
+    @staticmethod
+    def vector_set_to_str(vector_set):
+        if not vector_set:
+            return '{}'
 
+        vset_str = '{'
+        for v in vector_set:
+            vset_str += str(v) + ', '
+
+        return vset_str[0:len(vset_str) - 2] + '}'
 
 
 

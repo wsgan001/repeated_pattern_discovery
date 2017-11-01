@@ -1,3 +1,5 @@
+from vector import Vector
+from dataset import Dataset
 
 
 def main():

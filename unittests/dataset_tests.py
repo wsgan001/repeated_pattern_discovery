@@ -1,12 +1,12 @@
 import unittest
-import file_reader
+from dataset import Dataset
 from vector import Vector
 
 
-class FileReaderTest(unittest.TestCase):
+class DatasetTest(unittest.TestCase):
 
     def test_dataset_from_file(self):
-        dataset = file_reader.dataset_from_file('test_data.csv')
+        dataset = Dataset('test_data_reading.csv')
         self.assertEqual(len(dataset), 4)
         self.assertEqual(Vector([1, 2, 3]), dataset[0])
         self.assertEqual(Vector([0.1, 0, -1.2]), dataset[1])
