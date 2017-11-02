@@ -107,6 +107,11 @@ def siatec(d):
     return tecs
 
 
+def print_tecs(tecs):
+    for tec in tecs:
+        print(Vector.vector_set_to_str(tec[0]) + ', ' + Vector.vector_set_to_str(tec[1]))
+
+
 def vec(p):
     """ Computes the difference vectors between consecutive vectors
         of the pattern as defined by the VEC function in [Meredith2002]. """
@@ -175,7 +180,7 @@ def compute_tecs(y, v, w, d):
             j += 1
 
         pattern = collect_pattern(pattern_indices, d)
-        translators = find_translators(pattern_indices, w)
+        translators = find_translators(pattern_indices, w, len(d))
         tecs.append((pattern, translators))
 
         i += 1
@@ -195,9 +200,54 @@ def collect_pattern(pattern_indices, d):
     return pattern
 
 
-def find_translators(pattern_indices, w):
+def find_translators(pattern_ind, w, data_size):
+    """ Implements the algorithm in Fig. 25 of [Meredith2002] """
+    translators = []
 
-    return []
+    pattern_len = len(pattern_ind)
+
+    # The case of a pattern with size one needs to be handled separately.
+    if pattern_len == 1:
+        for j in range(0, len(w[0])):
+            translators.append(w[pattern_ind[0]][j][0])
+        return translators
+
+    J = []
+    for _ in range(0, pattern_len):
+        J.append(0)
+
+    finished = False
+    k = 1
+
+    while not finished:
+        if J[k] <= J[k - 1]:
+            J[k] = J[k - 1] + 1
+
+        while J[k] <= data_size - pattern_len + k \
+                and w[pattern_ind[k]][J[k]][0] < w[pattern_ind[k - 1]][J[k - 1]][0]:
+            J[k] += 1
+
+        if J[k] > data_size - pattern_len + k:
+            finished = True
+        elif w[pattern_ind[k]][J[k]][0] > w[pattern_ind[k - 1]][J[k - 1]][0]:
+            k = 1
+            J[0] += 1
+            if J[0] > data_size - pattern_len + 1:
+                finished = True
+        elif k == len(pattern_ind) - 1:
+            translators.append(w[pattern_ind[k]][J[k]][0])
+            k = 0
+            while k < pattern_len:
+                J[k] += 1
+                if J[k] > data_size - pattern_len + k:
+                    finished = True
+                    k = pattern_len - 1
+                k += 1
+            k = 1
+        else:
+            k += 1
+
+    return translators
 
 
 

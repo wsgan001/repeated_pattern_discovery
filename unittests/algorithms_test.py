@@ -87,5 +87,6 @@ class AlgorithmsTest(unittest.TestCase):
         vec_pattern = algorithms.vec(pattern)
         self.assertEqual(vec_pattern, [Vector([0, 2]), Vector([1, -1])])
 
+
 if __name__ == '__main__':
     unittest.main()
