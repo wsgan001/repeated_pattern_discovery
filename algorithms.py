@@ -61,6 +61,7 @@ def compute_mtps(v, d):
 
 
 def print_mtps(mtps):
+    print('Printing MTPs count=' + str(len(mtps)))
     for mtp in mtps:
         mtp_string = str(mtp[0])
         mtp_string += ' : {'
@@ -108,6 +109,7 @@ def siatec(d):
 
 
 def print_tecs(tecs):
+    print('Printing TECs, count=' + str(len(tecs)))
     for tec in tecs:
         print(Vector.vector_set_to_str(tec[0]) + ', ' + Vector.vector_set_to_str(tec[1]))
 

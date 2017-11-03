@@ -1,5 +1,6 @@
 import csv
 from vector import Vector
+import random
 
 
 class Dataset:
@@ -46,3 +47,4 @@ class Dataset:
 
     def sort_ascending(self):
         self._vectors.sort()
+
