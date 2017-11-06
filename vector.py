@@ -86,5 +86,9 @@ class Vector:
 
         return vset_str[0:len(vset_str) - 2] + '}'
 
+    @staticmethod
+    def zero_vector(dimensionality):
+        return Vector([0 for _ in range(dimensionality)])
+
 
 

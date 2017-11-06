@@ -270,31 +270,9 @@ def cosiatec(d):
     while p:
         best_tec = get_best_tec(p, d)
         best_tecs.append(best_tec)
-        p.remove_all(coverage(best_tec))
+        p.remove_all(best_tec.coverage())
 
     return best_tecs
-
-
-def coverage(tec):
-    """ Computes the set of points covered by the TEC as defined in eq. 4 of [Meredith2013]. """
-
-    covered_points = []
-    pattern = tec.get_pattern()
-
-    translators_contains_zero_vector = False
-
-    for translator in tec.get_translators():
-        if translator.is_zero():
-            translators_contains_zero_vector = True
-
-        for point in pattern:
-            covered_points.append(point + translator)
-
-    if not translators_contains_zero_vector:
-        for point in pattern:
-            covered_points.append(point)
-
-    return covered_points
 
 
 def get_best_tec(p, d):
@@ -311,6 +289,7 @@ def get_best_tec(p, d):
         conj = get_conj(tec, d)
         tec = rem_red_tran(tec)
         conj = rem_red_tran(conj)
+
         if not best_tec or is_better_tec(tec, best_tec, d):
             best_tec = tec
         if is_better_tec(conj, best_tec, d):
@@ -413,7 +392,7 @@ def get_conj(tec, sorted_dataset):
                         conj_tec_pattern_ind.append(i)
                         break
 
-    v_prime = []
+    v_prime = [Vector.zero_vector(p_0.dimensionality())]
     for point in tec.get_pattern():
         p = point - p_0
         if not p.is_zero():
@@ -430,23 +409,35 @@ def rem_red_tran(tec):
 
 
 def is_better_tec(tec1, tec2, sorted_dataset):
-    """ Implements algorithm from Figure 5 of [Meredith2013]. """
+    """ Implements algorithm from Figure 5 of [Meredith2013].
+        Added else ifs so that the algorithm works correctly as described in the article text. """
 
     if heuristics.compression_ratio(tec1) > heuristics.compression_ratio(tec2):
         return True
+    elif heuristics.compression_ratio(tec1) < heuristics.compression_ratio(tec2):
+        return False
 
     if heuristics.bounding_box_compactness(tec1, sorted_dataset) > heuristics.bounding_box_compactness(tec2, sorted_dataset):
         return True
+    elif heuristics.bounding_box_compactness(tec1, sorted_dataset) < heuristics.bounding_box_compactness(tec2,
+                                                                                                         sorted_dataset):
+        return False
 
-    if len(coverage(tec1)) > len(coverage(tec2)):
+    if len(tec1.coverage()) > len(tec2.coverage()):
         return True
+    elif len(tec1.coverage()) < len(tec2.coverage()):
+        return False
 
     # Compare pattern sizes
     if len(tec1.get_pattern()) > len(tec2.get_pattern()):
         return True
+    elif len(tec1.get_pattern()) < len(tec2.get_pattern()):
+        return False
 
     if heuristics.pattern_width(tec1) < heuristics.pattern_width(tec2):
         return True
+    elif heuristics.pattern_width(tec1) > heuristics.pattern_width(tec2):
+        return False
 
     if heuristics.pattern_volume(tec1) < heuristics.pattern_volume(tec2):
         return True

@@ -60,7 +60,7 @@ class AlgorithmsTest(unittest.TestCase):
 
     def test_coverage(self):
         tec = TEC([Vector([2, 1]), Vector([2, 2])], [], [Vector([0, 0]), Vector([1, 1])])
-        covered_points = algorithms.coverage(tec)
+        covered_points = tec.coverage()
         self.assertTrue(Vector([2, 1]) in covered_points)
         self.assertTrue(Vector([2, 2]) in covered_points)
         self.assertTrue(Vector([3, 2]) in covered_points)
@@ -82,7 +82,7 @@ class AlgorithmsTest(unittest.TestCase):
         covered_points = []
 
         for tec in best_tecs:
-            cov = algorithms.coverage(tec)
+            cov = tec.coverage()
             for p in cov:
                 covered_points.append(p)
 
@@ -105,7 +105,7 @@ class AlgorithmsTest(unittest.TestCase):
         covered_points = []
 
         for tec in best_tecs:
-            cov = algorithms.coverage(tec)
+            cov = tec.coverage()
             for p in cov:
                 covered_points.append(p)
 
@@ -114,11 +114,11 @@ class AlgorithmsTest(unittest.TestCase):
 
     @staticmethod
     def tec_in_list(tec, list_of_tecs):
-        cov_tec = algorithms.coverage(tec)
+        cov_tec = tec.coverage()
         cov_tec.sort()
 
         for t in list_of_tecs:
-            cov_t = algorithms.coverage(t)
+            cov_t = t.coverage()
             cov_t.sort()
             if cov_tec == cov_t:
                 return True

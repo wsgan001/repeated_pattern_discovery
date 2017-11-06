@@ -59,8 +59,8 @@ def convex_hull_compactness(pattern_indices, sorted_dataset):
 
 def compression_ratio(tec):
     """ Computes compression ratio as defined in equation 10 [Meredith2013]. """
-    cov_set_size = len(algorithms.coverage(tec))
-    return cov_set_size / (len(tec.get_pattern()) + len(tec.get_translators()) - 1)
+
+    return len(tec.coverage()) / (len(tec.get_pattern()) + len(tec.get_translators()) - 1)
 
 
 def pattern_width(tec):
