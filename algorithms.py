@@ -223,34 +223,36 @@ def find_translators(pattern_ind, w, data_size):
             translators.append(w[pattern_ind[0]][j][0])
         return translators
 
-    J = []
+    # This list keeps track of the index (=row) for columns in the difference
+    # vector table. row_indices[k] is the row number for the column k.
+    row_indices = []
     for _ in range(0, pattern_len):
-        J.append(0)
+        row_indices.append(0)
 
     finished = False
     k = 1
 
     while not finished:
-        if J[k] <= J[k - 1]:
-            J[k] = J[k - 1] + 1
+        if row_indices[k] <= row_indices[k - 1]:
+            row_indices[k] = row_indices[k - 1] + 1
 
-        while J[k] <= data_size - pattern_len + k \
-                and w[pattern_ind[k]][J[k]][0] < w[pattern_ind[k - 1]][J[k - 1]][0]:
-            J[k] += 1
+        while row_indices[k] <= data_size - pattern_len + k \
+                and w[pattern_ind[k]][row_indices[k]][0] < w[pattern_ind[k - 1]][row_indices[k - 1]][0]:
+            row_indices[k] += 1
 
-        if J[k] > data_size - pattern_len + k:
+        if row_indices[k] > data_size - pattern_len + k:
             finished = True
-        elif w[pattern_ind[k]][J[k]][0] > w[pattern_ind[k - 1]][J[k - 1]][0]:
+        elif w[pattern_ind[k]][row_indices[k]][0] > w[pattern_ind[k - 1]][row_indices[k - 1]][0]:
             k = 1
-            J[0] += 1
-            if J[0] > data_size - pattern_len + 1:
+            row_indices[0] += 1
+            if row_indices[0] > data_size - pattern_len + 1:
                 finished = True
         elif k == len(pattern_ind) - 1:
-            translators.append(w[pattern_ind[k]][J[k]][0])
+            translators.append(w[pattern_ind[k]][row_indices[k]][0])
             k = 0
             while k < pattern_len:
-                J[k] += 1
-                if J[k] > data_size - pattern_len + k:
+                row_indices[k] += 1
+                if row_indices[k] > data_size - pattern_len + k:
                     finished = True
                     k = pattern_len - 1
                 k += 1
@@ -264,13 +266,103 @@ def find_translators(pattern_ind, w, data_size):
 def cosiatec(d):
     """ Implements the COSIATEC algorithm as described in [Meredith2013]. """
     d.sort_ascending()
-    p = deepcopy(d) # TODO: Implement necessary functions for deep copying?
+    p = deepcopy(d)
     best_tecs = []
 
     while p:
         best_tec = get_best_tec(p, d)
         best_tecs.append(best_tec)
         p.remove_all(best_tec.coverage())
+
+    return best_tecs
+
+
+def siatec_compress(d):
+    """ Implements the SIATECCompress algorithm described in [Meredith2013]. """
+
+    d.sort_ascending()
+    v, w = compute_vector_tables(d)
+    mcps = compute_mtp_cis_pairs(v)
+    remove_trans_eq_mtps(mcps)
+    tecs = compute_tecs_from_mcps(d, w, mcps)
+    add_conjugate_tecs(tecs, d)
+    # rem_red_tran()
+    sort_tecs_by_quality(tecs, d)
+    return compute_encoding(tecs, d)
+
+
+def remove_trans_eq_mtps(mcps):
+    """ Removes translationally equivalent mtps from mcps by
+        removing redundant copies of MTPs that have the same
+        vectorized representation. """
+
+    i = 0
+    while i < len(mcps):
+        mcp = mcps[i]
+        vectorized = vec(mcp[0])
+
+        j = i + 1
+        while j < len(mcps):
+            if vectorized == vec(mcps[j][0]):
+                mcps.pop(j)
+            else:
+                j += 1
+
+        i += 1
+
+
+def compute_tecs_from_mcps(d, v, mcps):
+    tecs = []
+
+    for mcp in mcps:
+        tecs.append(get_tec_for_mtp(mcp[1], v, d))
+
+    return tecs
+
+
+def add_conjugate_tecs(tecs, d):
+    conj_tecs = []
+    for tec in tecs:
+        conj_tecs.append(get_conj(tec, d))
+
+    tecs += conj_tecs
+
+
+def sort_tecs_by_quality(tecs, sorted_dataset):
+    tecs.sort(key=cmp_to_key(lambda tec1, tec2: tec_quality_cmp(tec1, tec2, sorted_dataset)))
+
+
+def tec_quality_cmp(tec1, tec2, sorted_dataset):
+    if is_better_tec(tec1, tec2, sorted_dataset):
+        return -1
+    else:
+        return 1
+
+
+def compute_encoding(tecs, d):
+    best_tecs = []
+    cover = []
+
+    for i in range(0, len(tecs)):
+        tec = tecs[i]
+        s = tec.coverage()
+        s_diff_cover = deepcopy(s)
+        for p in cover:
+            if p in s_diff_cover:
+                s_diff_cover.remove(p)
+
+        if len(s_diff_cover) > len(tec.get_pattern()) + len(tec.get_translators()) - 1:
+            best_tecs.append(tec)
+            cover += s
+
+            dataset_covered = True
+            for p in d:
+                if p not in cover:
+                    dataset_covered = False
+                    break
+
+            if dataset_covered:
+                break
 
     return best_tecs
 
@@ -316,7 +408,10 @@ def compute_vector_tables(p):
 
 
 def compute_mtp_cis_pairs(v):
-    """ Implements algorithm of Figure 3 from [Meredith2013]. """
+    """ Implements algorithm of Figure 3 from [Meredith2013].
+        Returns a list of pairs where the first element is the set of
+        vectors in the MTP and the second element is the list of indices
+        for those vectors in the sorted dataset. """
 
     w = []
     for i in range(0, len(v)):

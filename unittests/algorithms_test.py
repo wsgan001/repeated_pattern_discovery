@@ -112,6 +112,52 @@ class AlgorithmsTest(unittest.TestCase):
         for i in range(0, len(dataset)):
             self.assertTrue(dataset[i] in covered_points)
 
+    def test_siatec_compress_with_data_from_meredith2002(self):
+        dataset = Dataset('unittest_data/Meredith2002_fig11.csv')
+        best_tecs = algorithms.siatec_compress(dataset)
+        all_tecs = AlgorithmsTest.get_tecs_for_Meredith2002_fig11()
+
+        algorithms.print_tecs(all_tecs)
+        algorithms.print_tecs(best_tecs)
+
+        # Check that all tecs in best_tecs are valid tecs.
+        for tec in best_tecs:
+            self.assertTrue(AlgorithmsTest.tec_in_list(tec, all_tecs))
+
+        # Check coverage of best_tecs.
+        covered_points = []
+
+        for tec in best_tecs:
+            cov = tec.coverage()
+            for p in cov:
+                covered_points.append(p)
+
+        for i in range(0, len(dataset)):
+            self.assertTrue(dataset[i] in covered_points)
+
+    def test_siatec_compress_with_random_data(self):
+        dataset = Dataset('unittest_data/rand_patterns.csv')
+        all_tecs = algorithms.siatec(dataset)
+        algorithms.print_tecs(all_tecs)
+
+        best_tecs = algorithms.siatec_compress(dataset)
+        algorithms.print_tecs(best_tecs)
+
+        # Check that all tecs in best_tecs are valid tecs.
+        for tec in best_tecs:
+            self.assertTrue(AlgorithmsTest.tec_in_list(tec, all_tecs))
+
+        # Check coverage of best_tecs.
+        covered_points = []
+
+        for tec in best_tecs:
+            cov = tec.coverage()
+            for p in cov:
+                covered_points.append(p)
+
+        for i in range(0, len(dataset)):
+            self.assertTrue(dataset[i] in covered_points)
+
     @staticmethod
     def tec_in_list(tec, list_of_tecs):
         cov_tec = tec.coverage()
