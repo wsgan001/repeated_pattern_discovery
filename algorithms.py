@@ -1,13 +1,22 @@
 from vector import Vector
-from dataset import Dataset
 from functools import cmp_to_key
+from copy import deepcopy
+from operator import itemgetter
+import heuristics
+from tec import TEC
+
 
 """ Implements algorithms defined in:
     [Meredith2002]
     David Meredith, Kjell Lemström & Geraint A. Wiggins (2002).
     Algorithms for discovering repeated patterns in
     multidimensional representations of polyphonic music,
-    Journal of New Music Research, 31:4, 321-345. """
+    Journal of New Music Research, 31:4, 321-345.
+
+    [Meredith2013]
+    David Meredith (2013).
+    COSIATEC and SIATECCOMPRESS: Pattern Discovery by Geometric Compression.
+    MIREX 2013, Curitiba, Brazil. Competition on Discovery of Repeated Themes and Sections. """
 
 
 def sia(d):
@@ -111,7 +120,7 @@ def siatec(d):
 def print_tecs(tecs):
     print('Printing TECs, count=' + str(len(tecs)))
     for tec in tecs:
-        print(Vector.vector_set_to_str(tec[0]) + ', ' + Vector.vector_set_to_str(tec[1]))
+        print(str(tec))
 
 
 def vec(p):
@@ -183,7 +192,7 @@ def compute_tecs(y, v, w, d):
 
         pattern = collect_pattern(pattern_indices, d)
         translators = find_translators(pattern_indices, w, len(d))
-        tecs.append((pattern, translators))
+        tecs.append(TEC(pattern, pattern_indices, translators))
 
         i += 1
         while i < len(y) and y[i][1] == y[i - 1][1]:
@@ -252,6 +261,194 @@ def find_translators(pattern_ind, w, data_size):
     return translators
 
 
+def cosiatec(d):
+    """ Implements the COSIATEC algorithm as described in [Meredith2013]. """
+    d.sort_ascending()
+    p = deepcopy(d) # TODO: Implement necessary functions for deep copying?
+    best_tecs = []
+
+    while p:
+        best_tec = get_best_tec(p, d)
+        best_tecs.append(best_tec)
+        p.remove_all(coverage(best_tec))
+
+    return best_tecs
 
 
+def coverage(tec):
+    """ Computes the set of points covered by the TEC as defined in eq. 4 of [Meredith2013]. """
 
+    covered_points = []
+    pattern = tec.get_pattern()
+
+    translators_contains_zero_vector = False
+
+    for translator in tec.get_translators():
+        if translator.is_zero():
+            translators_contains_zero_vector = True
+
+        for point in pattern:
+            covered_points.append(point + translator)
+
+    if not translators_contains_zero_vector:
+        for point in pattern:
+            covered_points.append(point)
+
+    return covered_points
+
+
+def get_best_tec(p, d):
+    """ Finds the best TEC in p, the copy of the dataset d. Figure 2 of [Meredith2013].  """
+
+    v, w = compute_vector_tables(p)
+    mcps = compute_mtp_cis_pairs(v)
+    best_tec = None
+
+    for i in range(0, len(mcps)):
+        mcp = mcps[i]
+        mtp_indices = mcp[1]
+        tec = get_tec_for_mtp(mtp_indices, w, p)
+        conj = get_conj(tec, d)
+        tec = rem_red_tran(tec)
+        conj = rem_red_tran(conj)
+        if not best_tec or is_better_tec(tec, best_tec, d):
+            best_tec = tec
+        if is_better_tec(conj, best_tec, d):
+            best_tec = conj
+
+    return best_tec
+
+
+def compute_vector_tables(p):
+    """ Compute the vector table V as defined in [Meredith2013],
+        and the vector table W as needed in SIATEC [Meredith2002]. """
+
+    v = []
+    w = []
+
+    for i in range(0, len(p)):
+        v.append([])
+        w.append([])
+        for j in range(0, len(p)):
+            v[i].append((p[i] - p[j], p[j], j))
+            w[i].append((p[j] - p[i], i))
+
+    return v, w
+
+
+def compute_mtp_cis_pairs(v):
+    """ Implements algorithm of Figure 3 from [Meredith2013]. """
+
+    w = []
+    for i in range(0, len(v)):
+        for j in range(0, len(v[i])):
+            w.append(v[i][j])
+
+    w.sort(key=itemgetter(0))
+
+    mtps = []
+    ciss = []
+    vec = w[0][0]
+    mtp = [w[0][1]]
+    cis = [w[0][2]]
+
+    for i in range(1, len(w)):
+        vpi = w[i]
+        if vpi[0] == vec:
+            mtp.append(vpi[1])
+            cis.append(vpi[2])
+        else:
+            mtps.append(mtp)
+            ciss.append(cis)
+            mtp = [vpi[1]]
+            cis = [vpi[2]]
+            vec = vpi[0]
+
+    mtps.append(mtp)
+    ciss.append(cis)
+
+    mcps = []
+    for i in range(0, len(mtps)):
+        mcps.append((mtps[i], ciss[i]))
+
+    return mcps
+
+
+def get_tec_for_mtp(pattern_indices, w, p):
+    """ Find the TEC for the given MTP. This function is not described in
+        [Meredith2013] but is said to use the logic of SIATEC, so this function
+        uses the logic of finding translators for the pattern used in SIATEC. """
+
+    translators = find_translators(pattern_indices, w, len(p))
+    pattern = []
+    for index in pattern_indices:
+        pattern.append(p[index])
+
+    tec = TEC(pattern, pattern_indices, translators)
+    return tec
+
+
+def get_conj(tec, sorted_dataset):
+    """ Computes the conjugate of a TEC as defined in equations
+        7-9 of [Meredith2013]. """
+
+    p_0 = tec.get_pattern()[0]
+    conj_tec_pattern_ind = [tec.get_pattern_indices()[0]]
+    p_prime = [p_0]
+
+    for translator in tec.get_translators():
+        if not translator.is_zero():
+            p_prime_vec = p_0 + translator
+            p_prime.append(p_prime_vec)
+
+            # Find the index for the point in the pattern of the conjugate TEC.
+            if p_prime_vec < p_0:
+                for i in range(tec.get_pattern_indices()[0], -1, -1):
+                    if sorted_dataset[i] == p_prime_vec:
+                        conj_tec_pattern_ind.append(i)
+                        break
+            else:
+                for i in range(tec.get_pattern_indices()[0], len(sorted_dataset)):
+                    if sorted_dataset[i] == p_prime_vec:
+                        conj_tec_pattern_ind.append(i)
+                        break
+
+    v_prime = []
+    for point in tec.get_pattern():
+        p = point - p_0
+        if not p.is_zero():
+            v_prime.append(point - p_0)
+
+    conj_tec = TEC(p_prime, conj_tec_pattern_ind, v_prime)
+
+    return conj_tec
+
+
+def rem_red_tran(tec):
+    # TODO: Try to find a method for this.
+    return tec
+
+
+def is_better_tec(tec1, tec2, sorted_dataset):
+    """ Implements algorithm from Figure 5 of [Meredith2013]. """
+
+    if heuristics.compression_ratio(tec1) > heuristics.compression_ratio(tec2):
+        return True
+
+    if heuristics.bounding_box_compactness(tec1, sorted_dataset) > heuristics.bounding_box_compactness(tec2, sorted_dataset):
+        return True
+
+    if len(coverage(tec1)) > len(coverage(tec2)):
+        return True
+
+    # Compare pattern sizes
+    if len(tec1.get_pattern()) > len(tec2.get_pattern()):
+        return True
+
+    if heuristics.pattern_width(tec1) < heuristics.pattern_width(tec2):
+        return True
+
+    if heuristics.pattern_volume(tec1) < heuristics.pattern_volume(tec2):
+        return True
+
+    return False

@@ -11,17 +11,17 @@ class Vector:
         """ Returns the dimensionality of the vector. """
         return len(self._components)
 
-    def get_component(self, i):
+    def __getitem__(self, item):
         """ Returns the ith component of the vector """
-        return self._components[i]
+        return self._components[item]
 
     def __cmp__(self, other):
         """ Vectors are compared using lexicographical ordering. """
 
         for i in range(0, self.dimensionality()):
-            if self.get_component(i) < other.get_component(i):
+            if self[i] < other[i]:
                 return -1
-            if self.get_component(i) > other.get_component(i):
+            if self[i] > other[i]:
                 return 1
 
         return 0
@@ -47,7 +47,7 @@ class Vector:
     def __str__(self):
         string_repr = '('
         for i in range(0, self.dimensionality()):
-            string_repr += str(self.get_component(i)) + ', '
+            string_repr += str(self[i]) + ', '
 
         string_repr = string_repr[0: len(string_repr)-2] + ')'
         return string_repr
@@ -56,7 +56,7 @@ class Vector:
         summed_components = []
 
         for i in range(0, self.dimensionality()):
-            summed_components.append(self.get_component(i) + other.get_component(i))
+            summed_components.append(self[i] + other[i])
 
         return Vector(summed_components)
 
@@ -64,9 +64,16 @@ class Vector:
         subs_components = []
 
         for i in range(0, self.dimensionality()):
-            subs_components.append(self.get_component(i) - other.get_component(i))
+            subs_components.append(self[i] - other[i])
 
         return Vector(subs_components)
+
+    def is_zero(self):
+        for component in self._components:
+            if component != 0:
+                return False
+
+        return True
 
     @staticmethod
     def vector_set_to_str(vector_set):

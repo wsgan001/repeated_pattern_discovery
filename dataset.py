@@ -48,3 +48,6 @@ class Dataset:
     def sort_ascending(self):
         self._vectors.sort()
 
+    def remove_all(self, vectors):
+        for vec in vectors:
+            self._vectors.remove(vec)

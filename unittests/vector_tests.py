@@ -13,9 +13,9 @@ class VectorTests(unittest.TestCase):
 
     def test_get_component(self):
         a = Vector([1, 2, 3])
-        self.assertEqual(a.get_component(0), 1)
-        self.assertEqual(a.get_component(1), 2)
-        self.assertEqual(a.get_component(2), 3)
+        self.assertEqual(a[0], 1)
+        self.assertEqual(a[1], 2)
+        self.assertEqual(a[2], 3)
 
     def test_eq(self):
         a = Vector([1, 2])
