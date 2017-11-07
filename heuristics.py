@@ -1,9 +1,7 @@
-import algorithms
-
 
 def bounding_box_compactness(tec, sorted_dataset):
     """ Computes the fraction of points belonging to the pattern of the TEC in
-        the minimum bounding box of the pattern. """
+        the closed minimum bounding box of the pattern. """
 
     pattern_size = len(tec.get_pattern_indices())
     if pattern_size == 1:

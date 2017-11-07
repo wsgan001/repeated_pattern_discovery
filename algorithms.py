@@ -211,16 +211,16 @@ def collect_pattern(pattern_indices, d):
     return pattern
 
 
-def find_translators(pattern_ind, w, data_size):
+def find_translators(pattern_indices, w, data_size):
     """ Implements the algorithm in Fig. 25 of [Meredith2002] """
     translators = []
 
-    pattern_len = len(pattern_ind)
+    pattern_len = len(pattern_indices)
 
     # The case of a pattern with size one needs to be handled separately.
     if pattern_len == 1:
         for j in range(0, len(w[0])):
-            translators.append(w[pattern_ind[0]][j][0])
+            translators.append(w[pattern_indices[0]][j][0])
         return translators
 
     # This list keeps track of the index (=row) for columns in the difference
@@ -237,18 +237,18 @@ def find_translators(pattern_ind, w, data_size):
             row_indices[k] = row_indices[k - 1] + 1
 
         while row_indices[k] <= data_size - pattern_len + k \
-                and w[pattern_ind[k]][row_indices[k]][0] < w[pattern_ind[k - 1]][row_indices[k - 1]][0]:
+                and w[pattern_indices[k]][row_indices[k]][0] < w[pattern_indices[k - 1]][row_indices[k - 1]][0]:
             row_indices[k] += 1
 
         if row_indices[k] > data_size - pattern_len + k:
             finished = True
-        elif w[pattern_ind[k]][row_indices[k]][0] > w[pattern_ind[k - 1]][row_indices[k - 1]][0]:
+        elif w[pattern_indices[k]][row_indices[k]][0] > w[pattern_indices[k - 1]][row_indices[k - 1]][0]:
             k = 1
             row_indices[0] += 1
             if row_indices[0] > data_size - pattern_len + 1:
                 finished = True
-        elif k == len(pattern_ind) - 1:
-            translators.append(w[pattern_ind[k]][row_indices[k]][0])
+        elif k == len(pattern_indices) - 1:
+            translators.append(w[pattern_indices[k]][row_indices[k]][0])
             k = 0
             while k < pattern_len:
                 row_indices[k] += 1
@@ -286,13 +286,14 @@ def siatec_compress(d):
     remove_trans_eq_mtps(mcps)
     tecs = compute_tecs_from_mcps(d, w, mcps)
     add_conjugate_tecs(tecs, d)
-    # rem_red_tran()
+    for tec in tecs:
+        rem_red_tran(tec)
     sort_tecs_by_quality(tecs, d)
     return compute_encoding(tecs, d)
 
 
 def remove_trans_eq_mtps(mcps):
-    """ Removes translationally equivalent mtps from mcps by
+    """ Removes translationally equivalent MTPs from mcps by
         removing redundant copies of MTPs that have the same
         vectorized representation. """
 
@@ -340,6 +341,8 @@ def tec_quality_cmp(tec1, tec2, sorted_dataset):
 
 
 def compute_encoding(tecs, d):
+    """ Implements algorithm in Figure 7 of [Meredith2013]. """
+
     best_tecs = []
     cover = []
 
@@ -368,7 +371,7 @@ def compute_encoding(tecs, d):
 
 
 def get_best_tec(p, d):
-    """ Finds the best TEC in p, the copy of the dataset d. Figure 2 of [Meredith2013].  """
+    """ Finds the best TEC in p, the copy of the dataset d. Implements algorithm in Figure 2 of [Meredith2013].  """
 
     v, w = compute_vector_tables(p)
     mcps = compute_mtp_cis_pairs(v)
@@ -379,8 +382,8 @@ def get_best_tec(p, d):
         mtp_indices = mcp[1]
         tec = get_tec_for_mtp(mtp_indices, w, p)
         conj = get_conj(tec, d)
-        tec = rem_red_tran(tec)
-        conj = rem_red_tran(conj)
+        rem_red_tran(tec)
+        rem_red_tran(conj)
 
         if not best_tec or is_better_tec(tec, best_tec, d):
             best_tec = tec
@@ -392,7 +395,7 @@ def get_best_tec(p, d):
 
 def compute_vector_tables(p):
     """ Compute the vector table V as defined in [Meredith2013],
-        and the vector table W as needed in SIATEC [Meredith2002]. """
+        and the vector table W as needed by SIATEC [Meredith2002]. """
 
     v = []
     w = []
@@ -499,8 +502,8 @@ def get_conj(tec, sorted_dataset):
 
 
 def rem_red_tran(tec):
-    # TODO: Try to find a method for this.
-    return tec
+    # TODO: Find a way to implement this.
+    pass
 
 
 def is_better_tec(tec1, tec2, sorted_dataset):
