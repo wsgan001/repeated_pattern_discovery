@@ -3,6 +3,7 @@ from dataset import Dataset
 from vector import Vector
 import orig_algorithms
 from tec import TEC
+import helpers
 
 
 class OrigAlgorithmsTest(unittest.TestCase):
@@ -20,14 +21,14 @@ class OrigAlgorithmsTest(unittest.TestCase):
         results_match = OrigAlgorithmsTest.check_result(result, exp_res)
         if not results_match:
             print('Incorrect result')
-            orig_algorithms.print_mtps(result)
+            helpers.print_mtps(result)
 
         self.assertTrue(results_match)
 
     def test_sia_with_data_from_meredith(self):
         dataset = Dataset('unittest_data/Meredith2002_fig11.csv')
         result = orig_algorithms.sia(dataset)
-        orig_algorithms.print_mtps(result)
+        helpers.print_mtps(result)
 
         exp_res = []
         exp_res.append((Vector([0, 1]), [Vector([2, 1]), Vector([2, 2])]))
@@ -43,7 +44,7 @@ class OrigAlgorithmsTest(unittest.TestCase):
         results_match = OrigAlgorithmsTest.check_result(result, exp_res)
         if not results_match:
             print('Incorrect result')
-            orig_algorithms.print_mtps(result)
+            helpers.print_mtps(result)
 
         self.assertTrue(results_match)
 
@@ -71,8 +72,8 @@ class OrigAlgorithmsTest(unittest.TestCase):
         best_tecs = orig_algorithms.cosiatec(dataset)
         all_tecs = OrigAlgorithmsTest.get_tecs_for_Meredith2002_fig11()
 
-        orig_algorithms.print_tecs(all_tecs)
-        orig_algorithms.print_tecs(best_tecs)
+        helpers.print_tecs(all_tecs)
+        helpers.print_tecs(best_tecs)
 
         # Check that all tecs in best_tecs are valid tecs.
         for tec in best_tecs:
@@ -92,10 +93,10 @@ class OrigAlgorithmsTest(unittest.TestCase):
     def test_cosiatec_with_random_data(self):
         dataset = Dataset('unittest_data/rand_patterns.csv')
         all_tecs = orig_algorithms.siatec(dataset)
-        orig_algorithms.print_tecs(all_tecs)
+        helpers.print_tecs(all_tecs)
 
         best_tecs = orig_algorithms.cosiatec(dataset)
-        orig_algorithms.print_tecs(best_tecs)
+        helpers.print_tecs(best_tecs)
 
         # Check that all tecs in best_tecs are valid tecs.
         for tec in best_tecs:
@@ -117,8 +118,8 @@ class OrigAlgorithmsTest(unittest.TestCase):
         best_tecs = orig_algorithms.siatec_compress(dataset)
         all_tecs = OrigAlgorithmsTest.get_tecs_for_Meredith2002_fig11()
 
-        orig_algorithms.print_tecs(all_tecs)
-        orig_algorithms.print_tecs(best_tecs)
+        helpers.print_tecs(all_tecs)
+        helpers.print_tecs(best_tecs)
 
         # Check that all tecs in best_tecs are valid tecs.
         for tec in best_tecs:
@@ -138,10 +139,10 @@ class OrigAlgorithmsTest(unittest.TestCase):
     def test_siatec_compress_with_random_data(self):
         dataset = Dataset('unittest_data/rand_patterns.csv')
         all_tecs = orig_algorithms.siatec(dataset)
-        orig_algorithms.print_tecs(all_tecs)
+        helpers.print_tecs(all_tecs)
 
         best_tecs = orig_algorithms.siatec_compress(dataset)
-        orig_algorithms.print_tecs(best_tecs)
+        helpers.print_tecs(best_tecs)
 
         # Check that all tecs in best_tecs are valid tecs.
         for tec in best_tecs:

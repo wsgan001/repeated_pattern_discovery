@@ -1,6 +1,6 @@
 
 def bounding_box_compactness(tec, sorted_dataset):
-    """ Computes the fraction of points belonging to the pattern of the TEC in
+    """ Computes the fraction of points belonging to the pattern in
         the closed minimum bounding box of the pattern. """
 
     pattern_size = len(tec.get_pattern_indices())
@@ -34,6 +34,35 @@ def bounding_box_compactness(tec, sorted_dataset):
             num_points_in_bb += 1
 
     return pattern_size / num_points_in_bb
+
+
+def find_pattern_indices(pattern, sorted_dataset):
+    """ Find the beginning and end indices of the pattern for compactness computation.
+        TODO: This could use binary search. """
+
+    first = pattern[0]
+    last = pattern[len(pattern) - 1]
+
+    begin = 0
+    end = 0
+
+    for i in range(len(sorted_dataset)):
+        if sorted_dataset[i] == first:
+            begin = i
+        if sorted_dataset[i] == last:
+            end = i
+            break
+
+    return begin, end
+
+
+def compactness(pattern_begin, pattern_end, pattern_size,  sorted_dataset):
+    """ Computes the compactness of pattern as defined in equation 7.3 of [Collins2011].
+        pattern_begin is the first index of the pattern in the sorted_dataset and
+        pattern_end is the last index. """
+
+    selection = sorted_dataset[pattern_begin:pattern_end + 1]
+    return pattern_size / len(selection)
 
 
 def is_within_bb(point, max_vector, min_vector):

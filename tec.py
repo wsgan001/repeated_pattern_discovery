@@ -68,7 +68,7 @@ class TEC:
     def coverage(self):
         """ Computes the set of points covered by the TEC as defined in eq. 4 of [Meredith2013]. """
 
-        covered_points = []
+        covered_points = set()
         pattern = self.get_pattern()
 
         translators_contains_zero_vector = False
@@ -78,10 +78,10 @@ class TEC:
                 translators_contains_zero_vector = True
 
             for point in pattern:
-                covered_points.append(point + translator)
+                covered_points.add(point + translator)
 
         if not translators_contains_zero_vector:
             for point in pattern:
-                covered_points.append(point)
+                covered_points.add(point)
 
-        return covered_points
+        return list(covered_points)

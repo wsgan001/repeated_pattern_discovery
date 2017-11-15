@@ -75,6 +75,10 @@ class Vector:
 
         return True
 
+    def __hash__(self):
+        """ Mock version of hashing for testing purposes """
+        return str(self).__hash__()
+
     @staticmethod
     def vector_set_to_str(vector_set):
         if not vector_set:

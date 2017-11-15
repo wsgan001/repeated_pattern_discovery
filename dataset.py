@@ -1,14 +1,18 @@
 import csv
 from vector import Vector
-import random
+from copy import deepcopy
 
 
 class Dataset:
 
     _vectors = []
+    _name = ''
 
     def __init__(self, filename):
         self._vectors = self.dataset_from_file(filename)
+
+        split_path = filename.split('/')
+        self._name = split_path[len(split_path) - 1]
 
     def dataset_from_file(self, filename):
         dataset = []
@@ -31,6 +35,9 @@ class Dataset:
                 dataset.append(Vector(components))
 
         return dataset
+
+    def get_name(self):
+        return self._name
 
     def __len__(self):
         return len(self._vectors)

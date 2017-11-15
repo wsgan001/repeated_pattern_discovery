@@ -5,18 +5,7 @@ from operator import itemgetter
 import heuristics
 from tec import TEC
 
-
-""" Implements algorithms defined in:
-    [Meredith2002]
-    David Meredith, Kjell Lemström & Geraint A. Wiggins (2002).
-    Algorithms for discovering repeated patterns in
-    multidimensional representations of polyphonic music,
-    Journal of New Music Research, 31:4, 321-345.
-
-    [Meredith2013]
-    David Meredith (2013).
-    COSIATEC and SIATECCOMPRESS: Pattern Discovery by Geometric Compression.
-    MIREX 2013, Curitiba, Brazil. Competition on Discovery of Repeated Themes and Sections. """
+""" Implements SIA family of algorithms. """
 
 
 def sia(d):
@@ -69,20 +58,6 @@ def compute_mtps(v, d):
     return mtps
 
 
-def print_mtps(mtps):
-    print('Printing MTPs count=' + str(len(mtps)))
-    for mtp in mtps:
-        mtp_string = str(mtp[0])
-        mtp_string += ' : {'
-
-        for vector in mtp[1]:
-            mtp_string += str(vector) + ', '
-
-        mtp_string = mtp_string[0:len(mtp_string) - 2]
-        mtp_string += '}'
-        print(mtp_string)
-
-
 def siatec(d):
     """ Implements the SIATEC algorithm described in [Meredith2002].
 
@@ -115,12 +90,6 @@ def siatec(d):
     tecs = compute_tecs(x, v, w, d)
 
     return tecs
-
-
-def print_tecs(tecs):
-    print('Printing TECs, count=' + str(len(tecs)))
-    for tec in tecs:
-        print(str(tec))
 
 
 def vec(p):
@@ -541,3 +510,136 @@ def is_better_tec(tec1, tec2, sorted_dataset):
         return True
 
     return False
+
+
+def siact(d, compactness_th, cardinality_th, mtp_algorithm=sia):
+    """ Implements the SIACT algorithm defined in Definition 7.2 of [Collins2011].
+        Takes as its parameter the mtp_algorithm used for finding the MTPs of dataset d. """
+
+    # First find MTPs of the dataset.
+    mtps = mtp_algorithm(d)
+
+    # Compactness trawl through each MTP
+    compacted_mtps = []
+
+    for mtp in mtps:
+        compacted_mtps += compactness_trawl(mtp, compactness_th, cardinality_th, d)
+
+    return compacted_mtps
+
+
+def compactness_trawl(mtp, compactness_th, cardinality_th, sorted_dataset):
+    """ Performs compactness trawling on an MTP as defined in Definition 7.2 of [Collins2011].
+        Returns a list of patterns obtained from the input mtp.
+        compactness_th is the compactness and cardinality_th the cardinality threshold. """
+
+    diff_vector = mtp[0]
+    pattern = mtp[1]
+
+    compacted_mtps = []
+    i = 0
+    j = 0
+    whole_pattern_compact = True
+
+    while j < len(pattern) - 1:
+        subpattern = pattern[i:j + 2]
+        begin, end = heuristics.find_pattern_indices(subpattern, sorted_dataset)
+
+        compactness = heuristics.compactness(begin, end, len(subpattern), sorted_dataset)
+        if compactness < compactness_th:
+            whole_pattern_compact = False
+            compact_pattern = pattern[i:j + 1]
+
+            if len(compact_pattern) >= cardinality_th:
+                compacted_mtps.append((diff_vector, compact_pattern))
+
+            i = j + 1
+
+        j += 1
+
+    # If the whole pattern has compactness above a, then check to see if it is large enough.
+    if whole_pattern_compact and len(pattern) >= cardinality_th:
+        compacted_mtps.append(mtp)
+
+    return compacted_mtps
+
+
+def siar(d, r):
+    """ Implements SIAR as defined in [Collins2011] and [Meredith2016] Fig.13.14.
+        Takes as parameters the dataset d and the number of subdiagonals r."""
+
+    d.sort_ascending()
+
+    # Compute r subdiagonals of vector table and store in V
+    V = []
+    for i in range(0, len(d) - 1):
+        j = i + 1
+        while j < len(d) and j <= i + r:
+            V.append((d[j] - d[i], i))
+            j += 1
+
+    # Store patterns in E by sorting and segmenting V
+    V.sort()
+    E = []
+    v = V[0][0]
+    e = [d[V[0][1]]]
+    for i in range(1, len(V)):
+        if V[i][0] == v:
+            e.append(d[V[i][1]])
+        else:
+            E.append(e)
+            e = [d[V[i][1]]]
+            v = V[i][0]
+
+    E.append(e)
+
+    # For each pattern in E, find +ve inter-point vectors and store in L
+    L = []
+    for i in range(0, len(E)):
+        e = E[i]
+        for j in range(0, len(e) - 1):
+            for k in range(j + 1, len(e)):
+                L.append(e[k] - e[j])
+
+    # Remove duplicates from L and order vectors by decreasing frequency.
+    L.sort()
+    v = L[0]
+    f = 1
+    M = []
+    for i in range(1, len(L)):
+        if L[i] == v:
+            f += 1
+        else:
+            M.append((v, f))
+            f = 1
+            v = L[i]
+
+    M.append((v, f))
+    M.sort(key=itemgetter(1), reverse=True)
+
+    # Find the MTP for each vector in M, store it in S and return S
+    S = []
+    set_d = set(d)
+    for i in range(0, len(M)):
+        S.append(find_mtp(d, M[i][0], set_d))
+
+    return S
+
+
+def find_mtp(d, diff_vec, set_d):
+    """ Find the MTP for diff_veb by finding the intersection of the sorted dataset
+        d and the dataset translated by -diff_vec. """
+
+    pattern = []
+
+    for point in d:
+        if point - diff_vec in set_d:
+            pattern.append(point)
+
+    mtp = (diff_vec, pattern)
+    return mtp
+
+
+
+
+
