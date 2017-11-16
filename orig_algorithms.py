@@ -570,64 +570,65 @@ def siar(d, r):
 
     d.sort_ascending()
 
-    # Compute r subdiagonals of vector table and store in V
-    V = []
+    # Compute r subdiagonals of vector table and store in diffs_on_diagonals
+    diffs_on_diagonals = []
     for i in range(0, len(d) - 1):
         j = i + 1
         while j < len(d) and j <= i + r:
-            V.append((d[j] - d[i], i))
+            diffs_on_diagonals.append((d[j] - d[i], i))
             j += 1
 
-    # Store patterns in E by sorting and segmenting V
-    V.sort()
-    E = []
-    v = V[0][0]
-    e = [d[V[0][1]]]
-    for i in range(1, len(V)):
-        if V[i][0] == v:
-            e.append(d[V[i][1]])
+    # Store patterns in transl_patterns by sorting and segmenting diffs_on_diagonals
+    diffs_on_diagonals.sort()
+    transl_patterns = []
+    diff_vec = diffs_on_diagonals[0][0]
+    pattern_points = [d[diffs_on_diagonals[0][1]]]
+    for i in range(1, len(diffs_on_diagonals)):
+        if diffs_on_diagonals[i][0] == diff_vec:
+            pattern_points.append(d[diffs_on_diagonals[i][1]])
         else:
-            E.append(e)
-            e = [d[V[i][1]]]
-            v = V[i][0]
+            transl_patterns.append(pattern_points)
+            pattern_points = [d[diffs_on_diagonals[i][1]]]
+            diff_vec = diffs_on_diagonals[i][0]
 
-    E.append(e)
+    transl_patterns.append(pattern_points)
 
-    # For each pattern in E, find +ve inter-point vectors and store in L
-    L = []
-    for i in range(0, len(E)):
-        e = E[i]
-        for j in range(0, len(e) - 1):
-            for k in range(j + 1, len(e)):
-                L.append(e[k] - e[j])
+    # For each pattern in transl_patterns, find difference vectors between pattern points
+    # and store in within_pattern_diffs
+    within_pattern_diffs = []
+    for i in range(0, len(transl_patterns)):
+        pattern_points = transl_patterns[i]
+        for j in range(0, len(pattern_points) - 1):
+            for k in range(j + 1, len(pattern_points)):
+                within_pattern_diffs.append(pattern_points[k] - pattern_points[j])
 
-    # Remove duplicates from L and order vectors by decreasing frequency.
-    L.sort()
-    v = L[0]
-    f = 1
-    M = []
-    for i in range(1, len(L)):
-        if L[i] == v:
-            f += 1
+    # Remove duplicates from within_pattern_diffs and order vectors by decreasing frequency.
+    within_pattern_diffs.sort()
+    diff_vec = within_pattern_diffs[0]
+    freq = 1
+    within_patt_diffs_sorted_by_freq = []
+    for i in range(1, len(within_pattern_diffs)):
+        if within_pattern_diffs[i] == diff_vec:
+            freq += 1
         else:
-            M.append((v, f))
-            f = 1
-            v = L[i]
+            within_patt_diffs_sorted_by_freq.append((diff_vec, freq))
+            freq = 1
+            diff_vec = within_pattern_diffs[i]
 
-    M.append((v, f))
-    M.sort(key=itemgetter(1), reverse=True)
+    within_patt_diffs_sorted_by_freq.append((diff_vec, freq))
+    within_patt_diffs_sorted_by_freq.sort(key=itemgetter(1), reverse=True)
 
-    # Find the MTP for each vector in M, store it in S and return S
-    S = []
+    # Find the MTP for each vector in within_patt_diffs_sorted_by_freq, store it in mtps and return mtps
+    mtps = []
     set_d = set(d)
-    for i in range(0, len(M)):
-        S.append(find_mtp(d, M[i][0], set_d))
+    for i in range(0, len(within_patt_diffs_sorted_by_freq)):
+        mtps.append(find_mtp(d, within_patt_diffs_sorted_by_freq[i][0], set_d))
 
-    return S
+    return mtps
 
 
 def find_mtp(d, diff_vec, set_d):
-    """ Find the MTP for diff_veb by finding the intersection of the sorted dataset
+    """ Find the MTP for diff_vec by finding the intersection of the sorted dataset
         d and the dataset translated by -diff_vec. """
 
     pattern = []

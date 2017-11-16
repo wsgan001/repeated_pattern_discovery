@@ -3,7 +3,7 @@ from copy import deepcopy
 from dataset import Dataset
 
 
-def measure_function(measured_function, input_data, iterations):
+def measure_function(measured_function, input_data, iterations, algorithm_name=''):
     times = []
 
     for _ in range(iterations):
@@ -16,7 +16,11 @@ def measure_function(measured_function, input_data, iterations):
         avg_time += t
 
     avg_time /= len(times)
-    print('Running ' + measured_function.__name__ + '\nDataset: '
+
+    if algorithm_name == '':
+        algorithm_name = measured_function.__name__
+
+    print('Algorithm: ' + algorithm_name + '\nDataset: '
           + input_data.get_name() + '\nAverage time: ' + str(avg_time)
           + '\nResult size: ' + str(len(result)) + '\n')
 
