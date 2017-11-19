@@ -62,5 +62,11 @@ def csv_from_musicxml(musicxml_file_name, csv_name):
     # TODO: create this
 
 
+def create_random_datafiles(limits, increment, dimensionality):
+    for n in range(limits[0], limits[1] + 1, increment):
+        create_data_file_with_random_patterns(n, 5, 5, 5, dimensionality, 'testfiles/rand_patterns_'
+                                                + str(n) + '_dim' + str(dimensionality) + '.csv')
+
+
 if __name__ == '__main__':
-    pass
+    pass # create_random_datafiles((100, 900), 100, 2)

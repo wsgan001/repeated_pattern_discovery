@@ -9,7 +9,7 @@ class OrigAlgorithmsTest(unittest.TestCase):
 
     def test_own_sia(self):
         dataset = Dataset('unittest_data/test_data1.csv')
-        result = own_algorithms.sia_map(dataset)
+        result = own_algorithms.sia_hash(dataset)
 
         exp_res = []
         exp_res.append((Vector([2, 1]), [Vector([1, 2]), Vector([2, 1])]))
@@ -26,7 +26,7 @@ class OrigAlgorithmsTest(unittest.TestCase):
 
     def test_sia_with_data_from_meredith(self):
         dataset = Dataset('unittest_data/Meredith2002_fig11.csv')
-        result = own_algorithms.sia_map(dataset)
+        result = own_algorithms.sia_hash(dataset)
         helpers.print_mtps(result)
 
         exp_res = []

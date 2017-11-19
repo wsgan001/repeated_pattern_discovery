@@ -1,7 +1,7 @@
 from dataset import Dataset
 
 
-def sia_map(d):
+def sia_hash(d):
     """ Computes the MTPs of dataset d.
         Uses a dictionary/map to avoid having to sort the
         set of difference vectors. Runs in O(kn^2) time. """
