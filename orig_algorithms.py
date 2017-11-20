@@ -241,7 +241,7 @@ def cosiatec(d):
     while p:
         best_tec = get_best_tec(p, d)
         best_tecs.append(best_tec)
-        p.remove_all(best_tec.coverage())
+        p.remove_all(list(best_tec.coverage()))
 
     return best_tecs
 
@@ -641,6 +641,140 @@ def find_mtp(d, diff_vec, set_d):
     return mtp
 
 
+def forths_algorithm(d, c_min, sigma_min):
+    """ Implements Forth's algorithm [Forth2012], [Meredith2016]. """
+
+    tecs = siatec(d)
+
+    tec_coverages = []
+    for tec in tecs:
+        tec_coverages.append((tec.coverage(), tec))
+
+    tec_saliences = compute_tec_saliences(tecs, d)
+
+    return forth_cover(d, tec_coverages, tec_saliences, c_min, sigma_min)
 
 
+def compute_tec_saliences(tecs, d):
+    """ Computes the saliences for TECs as defined in equations. 3.6-3.15 of [Forth2012]. """
 
+    compr_ratios = []
+    max_compr_ratio = -1
+    min_compr_ratio = len(d)
+
+    compactnesses = []
+    max_compactness = -1
+    min_compactness = 2
+
+    for tec in tecs:
+        compr_ratio = heuristics.compression_ratio(tec)
+        if compr_ratio > max_compr_ratio:
+            max_compr_ratio = compr_ratio
+        if compr_ratio < min_compr_ratio:
+            min_compr_ratio = compr_ratio
+
+        compr_ratios.append(compr_ratio)
+
+        compactness = compute_max_compactness(tec, d)
+        if compactness > max_compactness:
+            max_compactness = compactness
+        if compactness < min_compactness:
+            min_compactness = compactness
+
+        compactnesses.append(compactness)
+
+    tec_saliences = []
+    for i in range(len(tecs)):
+        # Normalization based on eq. 3.14 of [Forth2012].
+        normalized_compactness = (compactnesses[i] - min_compactness) / (max_compactness - min_compactness)
+        normalized_compr_ratio = (compr_ratios[i] - min_compr_ratio) / (max_compr_ratio - min_compr_ratio)
+
+        tec_saliences.append(normalized_compr_ratio * normalized_compactness)
+
+    return tec_saliences
+
+
+def compute_max_compactness(tec, d):
+    """ Returns the maximum compactness of any occurrence of the pattern of the TEC.
+        This does not take voice information into consideration as in [Forth2012] eq. 3.13. """
+
+    translators = tec.get_translators()
+
+    zero_vector = Vector.zero_vector(translators[0].dimensionality())
+    if zero_vector not in translators:
+        translators.append(zero_vector)
+
+    max_comp = 0
+    pattern_size = len(tec.get_pattern())
+
+    for translator in tec.get_translators():
+        transl_pattern = [v + translator for v in tec.get_pattern()]
+        begin, end = heuristics.find_pattern_indices(transl_pattern, d)
+        compactness = heuristics.compactness(begin, end, pattern_size, d)
+        if compactness > max_comp:
+            max_comp = compactness
+
+    return max_comp
+
+
+def forth_cover(d, tec_coverages, W, c_min, sigma_min):
+    """ Finds the a cover from the TECs. Based on the pseudocode in [Meredith2016] Fig. 13.10. """
+
+    best_tecs = []
+
+    P = set()
+    found = True
+
+    while not is_dataset_covered(P, d) and found:
+        found = False
+        gamma_max = 0
+        c_best = None
+        i_best = None
+        R = []
+        for i in range(len(tec_coverages)):
+            c = len(tec_coverages[i][0] - P)
+            if c < c_min:
+                R.append(i)
+                continue
+            gamma = c * W[i]
+            if gamma > gamma_max:
+                gamma_max = gamma
+                c_best = tec_coverages[i][0]
+                i_best = i
+
+        if c_best:
+            R.append(i_best)
+            found = True
+            P = P | c_best
+            i = 0
+            primary_found = False
+            while not primary_found and i < len(best_tecs):
+                if len((best_tecs[i][0] & c_best) - best_tecs[i][0]) > sigma_min:
+                    best_tecs[i].append(c_best)
+                    primary_found = True
+                i += 1
+
+            if not primary_found:
+                best_tecs.append([c_best])
+
+            remove_from_R = []
+            remove_from_C = []
+            for index in R:
+                remove_from_R.append(W[index])
+                remove_from_C.append(tec_coverages[index])
+
+            for removable in remove_from_R:
+                W.remove(removable)
+
+            for removable in remove_from_C:
+                tec_coverages.remove(removable)
+
+    return best_tecs
+
+
+def is_dataset_covered(P, d):
+    for point in d:
+        if point not in P:
+            return False
+
+    return True

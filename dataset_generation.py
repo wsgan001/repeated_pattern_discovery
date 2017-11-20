@@ -1,5 +1,5 @@
 import random
-from copy import deepcopy
+from vector import Vector
 
 
 def create_random_data_file(n, dimensionality, filename):
@@ -12,47 +12,52 @@ def create_random_data_file(n, dimensionality, filename):
 def create_data_file_with_random_patterns(n, max_pattern_size, max_reps, num_patterns, dimensionality, filename):
     f = open(filename, mode='w')
 
-    lines_written = 0
-    lines = []
+    dataset_vectors = set()
 
-    while lines_written < n:
+    while len(dataset_vectors) <= n:
         for _ in range(0, num_patterns):
             pattern = []
             pattern_size = random.randint(1, max_pattern_size)
             for _ in range(0, pattern_size):
-                pattern.append(get_random_vector(dimensionality, 0, 500))
+                v = get_random_vector(dimensionality, 0, 500)
+                while v in dataset_vectors:
+                    v = get_random_vector(dimensionality, 0, 500)
+
+                pattern.append(v)
 
             for v in pattern:
-                lines.append(vector_to_csv_line(v))
-                lines_written += 1
+                dataset_vectors.add(v)
 
             repetitions = random.randint(0, max_reps)
             for _ in range(0, repetitions):
-                p_copy = deepcopy(pattern)
-                shift = random.randint(-100, 300)
-                for p in p_copy:
-                    p[0] += shift
-                    lines.append(vector_to_csv_line(p))
-                    lines_written += 1
+                rand_components = []
+                for _ in range(dimensionality):
+                    rand_components.append(random.randint(0, 300))
 
-    for line in lines[0:n]:
-        f.write(line)
+                rand_vector = Vector(rand_components)
+
+                for p in pattern:
+                    translated_vec = p + rand_vector
+                    dataset_vectors.add(translated_vec)
+
+    for vec in list(dataset_vectors)[0:n]:
+        f.write(vector_to_csv_line(vec))
 
 
 def get_random_vector(dimensionality, min_val, max_val):
-    vec = []
+    components = []
     for _ in range(0, dimensionality):
         rint = float(random.randint(min_val, max_val))
         rint += random.randint(1, 4) / 4
-        vec.append(rint)
+        components.append(rint)
 
-    return vec
+    return Vector(components)
 
 
 def vector_to_csv_line(vec):
     s = ''
-    for v in vec:
-        s += str(v) + ', '
+    for i in range(vec.dimensionality()):
+        s += str(vec[i]) + ', '
 
     return s[0:len(s) - 2] + '\n'
 
@@ -69,4 +74,5 @@ def create_random_datafiles(limits, increment, dimensionality):
 
 
 if __name__ == '__main__':
-    pass # create_random_datafiles((100, 900), 100, 2)
+    create_random_datafiles((100, 900), 100, 2)
+    create_random_datafiles((1000, 20000), 1000, 2)

@@ -66,7 +66,8 @@ class TEC:
         return Vector(min_components), Vector(max_components)
 
     def coverage(self):
-        """ Computes the set of points covered by the TEC as defined in eq. 4 of [Meredith2013]. """
+        """ Computes the set of points covered by the TEC as defined in eq. 4 of [Meredith2013].
+            Returns the covered points as a set. """
 
         covered_points = set()
         pattern = self.get_pattern()
@@ -84,4 +85,4 @@ class TEC:
             for point in pattern:
                 covered_points.add(point)
 
-        return list(covered_points)
+        return covered_points

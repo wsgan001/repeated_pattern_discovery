@@ -3,6 +3,11 @@
     Improved methods for pattern discovery in music, with applications in automated stylistic composition.
     PhD thesis The Open University.
 
+[Forth2012]
+    Forth, Jamie C. (2012).
+    Cognitively-motivated geometric methods of pattern discovery and models of similarity in music.
+    PhD thesis, Department of Computing, Goldsmiths, University of London.
+
 [Meredith2002]
     David Meredith, Kjell Lemström & Geraint A. Wiggins (2002).
     Algorithms for discovering repeated patterns in

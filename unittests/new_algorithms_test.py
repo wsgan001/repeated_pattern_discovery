@@ -1,15 +1,15 @@
 import unittest
 from dataset import Dataset
 from vector import Vector
-import own_algorithms
+import new_algorithms
 import helpers
 
 
-class OrigAlgorithmsTest(unittest.TestCase):
+class NewAlgorithmsTest(unittest.TestCase):
 
     def test_own_sia(self):
         dataset = Dataset('unittest_data/test_data1.csv')
-        result = own_algorithms.sia_hash(dataset)
+        result = new_algorithms.sia_hash(dataset)
 
         exp_res = []
         exp_res.append((Vector([2, 1]), [Vector([1, 2]), Vector([2, 1])]))
@@ -17,7 +17,7 @@ class OrigAlgorithmsTest(unittest.TestCase):
         exp_res.append((Vector([3, 0]), [Vector([1, 2])]))
         exp_res.append((Vector([1, 2]), [Vector([2, 1])]))
 
-        results_match = OrigAlgorithmsTest.check_result(result, exp_res)
+        results_match = NewAlgorithmsTest.check_result(result, exp_res)
         if not results_match:
             print('Incorrect result')
             helpers.print_mtps(result)
@@ -26,7 +26,7 @@ class OrigAlgorithmsTest(unittest.TestCase):
 
     def test_sia_with_data_from_meredith(self):
         dataset = Dataset('unittest_data/Meredith2002_fig11.csv')
-        result = own_algorithms.sia_hash(dataset)
+        result = new_algorithms.sia_hash(dataset)
         helpers.print_mtps(result)
 
         exp_res = []
@@ -40,7 +40,7 @@ class OrigAlgorithmsTest(unittest.TestCase):
         exp_res.append((Vector([2, -1]), [Vector([1, 3])]))
         exp_res.append((Vector([2, 1]), [Vector([1, 1])]))
 
-        results_match = OrigAlgorithmsTest.check_result(result, exp_res)
+        results_match = NewAlgorithmsTest.check_result(result, exp_res)
         if not results_match:
             print('Incorrect result')
             helpers.print_mtps(result)
