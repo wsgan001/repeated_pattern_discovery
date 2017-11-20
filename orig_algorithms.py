@@ -642,17 +642,13 @@ def find_mtp(d, diff_vec, set_d):
 
 
 def forths_algorithm(d, c_min, sigma_min):
-    """ Implements Forth's algorithm [Forth2012], [Meredith2016]. """
+    """ Implements Forth's algorithm [Forth2012], [Meredith2016].
+        Returns two lists of TECs, primary and secondary TECs. """
 
     tecs = siatec(d)
-
-    tec_coverages = []
-    for tec in tecs:
-        tec_coverages.append((tec.coverage(), tec))
-
     tec_saliences = compute_tec_saliences(tecs, d)
 
-    return forth_cover(d, tec_coverages, tec_saliences, c_min, sigma_min)
+    return forth_cover(d, tecs, tec_saliences, c_min, sigma_min)
 
 
 def compute_tec_saliences(tecs, d):
@@ -717,59 +713,68 @@ def compute_max_compactness(tec, d):
     return max_comp
 
 
-def forth_cover(d, tec_coverages, W, c_min, sigma_min):
-    """ Finds the a cover from the TECs. Based on the pseudocode in [Meredith2016] Fig. 13.10. """
+def forth_cover(d, tecs, tec_saliences, c_min, sigma_min):
+    """ Finds the a cover from the TECs. Based on the pseudocode in [Meredith2016] Fig. 13.10.
+        Modified to return the primary and secondary TECs as separate lists instead of returning a list of lists
+        of sets (TEC coverages). """
 
-    best_tecs = []
+    selected_tecs = []
 
-    P = set()
+    points_covered = set()
     found = True
 
-    while not is_dataset_covered(P, d) and found:
+    while not is_dataset_covered(points_covered, d) and found:
         found = False
-        gamma_max = 0
-        c_best = None
-        i_best = None
-        R = []
-        for i in range(len(tec_coverages)):
-            c = len(tec_coverages[i][0] - P)
-            if c < c_min:
-                R.append(i)
+        max_salience = 0
+        best_tec = None
+        index_of_best = None
+        indexes_of_removable = []
+        for i in range(len(tecs)):
+            num_new_points_in_cover = len(tecs[i].coverage() - points_covered)
+            if num_new_points_in_cover < c_min:
+                indexes_of_removable.append(i)
                 continue
-            gamma = c * W[i]
-            if gamma > gamma_max:
-                gamma_max = gamma
-                c_best = tec_coverages[i][0]
-                i_best = i
+            weighed_salience = num_new_points_in_cover * tec_saliences[i]
+            if weighed_salience > max_salience:
+                max_salience = weighed_salience
+                best_tec = tecs[i]
+                index_of_best = i
 
-        if c_best:
-            R.append(i_best)
+        if best_tec:
+            indexes_of_removable.append(index_of_best)
             found = True
-            P = P | c_best
+            points_covered = points_covered | best_tec.coverage()
             i = 0
             primary_found = False
-            while not primary_found and i < len(best_tecs):
-                if len((best_tecs[i][0] & c_best) - best_tecs[i][0]) > sigma_min:
-                    best_tecs[i].append(c_best)
+            while not primary_found and i < len(selected_tecs):
+                if len((selected_tecs[i][0].coverage() & best_tec.coverage())) / len(selected_tecs[i][0].coverage()) > sigma_min:
+                    selected_tecs[i].append(best_tec)
                     primary_found = True
                 i += 1
 
             if not primary_found:
-                best_tecs.append([c_best])
+                selected_tecs.append([best_tec])
 
-            remove_from_R = []
-            remove_from_C = []
-            for index in R:
-                remove_from_R.append(W[index])
-                remove_from_C.append(tec_coverages[index])
+            remove_from_saliences = []
+            remove_from_tecs = []
+            for index in indexes_of_removable:
+                remove_from_saliences.append(tec_saliences[index])
+                remove_from_tecs.append(tecs[index])
 
-            for removable in remove_from_R:
-                W.remove(removable)
+            for removable in remove_from_saliences:
+                tec_saliences.remove(removable)
 
-            for removable in remove_from_C:
-                tec_coverages.remove(removable)
+            for removable in remove_from_tecs:
+                tecs.remove(removable)
 
-    return best_tecs
+    primary_tecs = []
+    secondary_tecs = []
+
+    for tec_list in selected_tecs:
+        primary_tecs.append(tec_list[0])
+        secondary_tecs.append(tec_list[1:len(tec_list)])
+
+    return primary_tecs, secondary_tecs
 
 
 def is_dataset_covered(P, d):

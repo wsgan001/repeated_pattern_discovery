@@ -6,8 +6,8 @@ import helpers
 
 
 def main():
-    tecs = orig_algorithms.forths_algorithm(Dataset('testfiles/rand_patterns_100_dim2.csv'), 4, 5)
-    print('Found', len(tecs), 'TECs')
+    primary, secondary = orig_algorithms.forths_algorithm(Dataset('testfiles/rand_patterns_300_dim2.csv'), 2, 1)
+    helpers.print_tecs(primary)
 
 
 if __name__ == "__main__":

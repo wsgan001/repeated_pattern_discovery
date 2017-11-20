@@ -6,6 +6,7 @@ class TEC:
     _pattern = []
     _pattern_indices = []
     _translators = []
+    _coverage = None
 
     def __init__(self, pattern, pattern_indices, translators):
         self._pattern = pattern
@@ -69,6 +70,9 @@ class TEC:
         """ Computes the set of points covered by the TEC as defined in eq. 4 of [Meredith2013].
             Returns the covered points as a set. """
 
+        if self._coverage:
+            return self._coverage
+
         covered_points = set()
         pattern = self.get_pattern()
 
@@ -85,4 +89,5 @@ class TEC:
             for point in pattern:
                 covered_points.add(point)
 
-        return covered_points
+        self._coverage = covered_points
+        return self._coverage
