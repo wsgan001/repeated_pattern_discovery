@@ -680,10 +680,19 @@ def compute_tec_saliences(tecs, d):
         compactnesses.append(compactness)
 
     tec_saliences = []
+
+    compactness_denom = (max_compactness - min_compactness)
+    if compactness_denom == 0:
+        compactness_denom = 1
+
+    compr_ratio_denom = (max_compr_ratio - min_compr_ratio)
+    if compr_ratio_denom == 0:
+        compr_ratio_denom = 1
+
     for i in range(len(tecs)):
         # Normalization based on eq. 3.14 of [Forth2012].
-        normalized_compactness = (compactnesses[i] - min_compactness) / (max_compactness - min_compactness)
-        normalized_compr_ratio = (compr_ratios[i] - min_compr_ratio) / (max_compr_ratio - min_compr_ratio)
+        normalized_compactness = (compactnesses[i] - min_compactness) / compactness_denom
+        normalized_compr_ratio = (compr_ratios[i] - min_compr_ratio) / compr_ratio_denom
 
         tec_saliences.append(normalized_compr_ratio * normalized_compactness)
 

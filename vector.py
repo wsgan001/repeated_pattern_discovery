@@ -1,3 +1,6 @@
+import math
+
+
 class Vector:
     """ Defines a vector and the operations required for expressing symbolic music
         data as vectors as defined in SOURCE """
@@ -77,7 +80,13 @@ class Vector:
 
     def __hash__(self):
         """ Mock version of hashing for testing purposes """
-        return str(self).__hash__()
+
+        norm = 0
+        for d in self._components:
+            norm += d * d
+
+        norm *= self._components[0]
+        return hash(norm)
 
     @staticmethod
     def vector_set_to_str(vector_set):
