@@ -18,7 +18,7 @@ class OrigAlgorithmsTest(unittest.TestCase):
         exp_res.append((Vector([3, 0]), [Vector([1, 2])]))
         exp_res.append((Vector([1, 2]), [Vector([2, 1])]))
 
-        results_match = OrigAlgorithmsTest.check_result(result, exp_res)
+        results_match = helpers.check_result(result, exp_res)
         if not results_match:
             print('Incorrect result')
             helpers.print_mtps(result)
@@ -41,7 +41,7 @@ class OrigAlgorithmsTest(unittest.TestCase):
         exp_res.append((Vector([2, -1]), [Vector([1, 3])]))
         exp_res.append((Vector([2, 1]), [Vector([1, 1])]))
 
-        results_match = OrigAlgorithmsTest.check_result(result, exp_res)
+        results_match = helpers.check_result(result, exp_res)
         if not results_match:
             print('Incorrect result')
             helpers.print_mtps(result)
@@ -52,8 +52,8 @@ class OrigAlgorithmsTest(unittest.TestCase):
         dataset = Dataset('unittest_data/Meredith2002_fig11.csv')
         result = orig_algorithms.siatec(dataset)
 
-        exp_res = OrigAlgorithmsTest.get_tecs_for_Meredith2002_fig11()
-        results_match = OrigAlgorithmsTest.check_result(result, exp_res)
+        exp_res = helpers.get_tecs_for_Meredith2002_fig11()
+        results_match = helpers.check_result(result, exp_res)
         if not results_match:
             print('Incorrect result')
 
@@ -70,14 +70,14 @@ class OrigAlgorithmsTest(unittest.TestCase):
     def test_cosiatec_with_data_from_meredith2002(self):
         dataset = Dataset('unittest_data/Meredith2002_fig11.csv')
         best_tecs = orig_algorithms.cosiatec(dataset)
-        all_tecs = OrigAlgorithmsTest.get_tecs_for_Meredith2002_fig11()
+        all_tecs = helpers.get_tecs_for_Meredith2002_fig11()
 
         helpers.print_tecs(all_tecs)
         helpers.print_tecs(best_tecs)
 
         # Check that all tecs in best_tecs are valid tecs.
         for tec in best_tecs:
-            self.assertTrue(OrigAlgorithmsTest.tec_in_list(tec, all_tecs))
+            self.assertTrue(helpers.tec_in_list(tec, all_tecs))
 
         # Check coverage of best_tecs.
         covered_points = []
@@ -100,7 +100,7 @@ class OrigAlgorithmsTest(unittest.TestCase):
 
         # Check that all tecs in best_tecs are valid tecs.
         for tec in best_tecs:
-            self.assertTrue(OrigAlgorithmsTest.tec_in_list(tec, all_tecs))
+            self.assertTrue(helpers.tec_in_list(tec, all_tecs))
 
         # Check coverage of best_tecs.
         covered_points = []
@@ -116,14 +116,14 @@ class OrigAlgorithmsTest(unittest.TestCase):
     def test_siatec_compress_with_data_from_meredith2002(self):
         dataset = Dataset('unittest_data/Meredith2002_fig11.csv')
         best_tecs = orig_algorithms.siatec_compress(dataset)
-        all_tecs = OrigAlgorithmsTest.get_tecs_for_Meredith2002_fig11()
+        all_tecs = helpers.get_tecs_for_Meredith2002_fig11()
 
         helpers.print_tecs(all_tecs)
         helpers.print_tecs(best_tecs)
 
         # Check that all tecs in best_tecs are valid tecs.
         for tec in best_tecs:
-            self.assertTrue(OrigAlgorithmsTest.tec_in_list(tec, all_tecs))
+            self.assertTrue(helpers.tec_in_list(tec, all_tecs))
 
         # Check coverage of best_tecs.
         covered_points = []
@@ -146,7 +146,7 @@ class OrigAlgorithmsTest(unittest.TestCase):
 
         # Check that all tecs in best_tecs are valid tecs.
         for tec in best_tecs:
-            self.assertTrue(OrigAlgorithmsTest.tec_in_list(tec, all_tecs))
+            self.assertTrue(helpers.tec_in_list(tec, all_tecs))
 
         # Check coverage of best_tecs.
         covered_points = []
@@ -158,48 +158,6 @@ class OrigAlgorithmsTest(unittest.TestCase):
 
         for i in range(0, len(dataset)):
             self.assertTrue(dataset[i] in covered_points)
-
-    @staticmethod
-    def tec_in_list(tec, list_of_tecs):
-        cov_tec = tec.coverage()
-        cov_tec.sort()
-
-        for t in list_of_tecs:
-            cov_t = t.coverage()
-            cov_t.sort()
-            if cov_tec == cov_t:
-                return True
-
-        return False
-
-    @staticmethod
-    def get_tecs_for_Meredith2002_fig11():
-        exp_res = []
-        exp_res.append(TEC([Vector([1, 3])], [], [Vector([0, -2]), Vector([0, 0]), Vector([1, -2]),
-                                                  Vector([1, -1]), Vector([1, 0]), Vector([2, -1])]))
-
-        exp_res.append(TEC([Vector([2, 1]), Vector([2, 2])], [], [Vector([0, 0]), Vector([0, 1])]))
-
-        exp_res.append(TEC([Vector([1, 1]), Vector([2, 1])], [], [Vector([0, 0]), Vector([0, 2]), Vector([1, 1])]))
-
-        exp_res.append(TEC([Vector([1, 1]), Vector([1, 3]), Vector([2, 2])], [], [Vector([0, 0]), Vector([1, 0])]))
-        return exp_res
-
-    @staticmethod
-    def check_result(result, expected):
-        results_match = True
-
-        for exp in expected:
-            if exp not in result:
-                results_match = False
-                print(exp, 'not in result')
-
-        for res in result:
-            if res not in expected:
-                results_match = False
-                print(res, 'not in expected')
-
-        return results_match
 
     def test_vec(self):
         pattern = [Vector([0, 0]), Vector([0, 2]), Vector([1, 1])]

@@ -2,6 +2,7 @@ import unittest
 from dataset import Dataset
 from vector import Vector
 import new_algorithms
+import orig_algorithms
 import helpers
 
 
@@ -17,7 +18,7 @@ class NewAlgorithmsTest(unittest.TestCase):
         exp_res.append((Vector([3, 0]), [Vector([1, 2])]))
         exp_res.append((Vector([1, 2]), [Vector([2, 1])]))
 
-        results_match = NewAlgorithmsTest.check_result(result, exp_res)
+        results_match = helpers.check_result(result, exp_res)
         if not results_match:
             print('Incorrect result')
             helpers.print_mtps(result)
@@ -40,28 +41,39 @@ class NewAlgorithmsTest(unittest.TestCase):
         exp_res.append((Vector([2, -1]), [Vector([1, 3])]))
         exp_res.append((Vector([2, 1]), [Vector([1, 1])]))
 
-        results_match = NewAlgorithmsTest.check_result(result, exp_res)
+        results_match = helpers.check_result(result, exp_res)
         if not results_match:
             print('Incorrect result')
             helpers.print_mtps(result)
 
         self.assertTrue(results_match)
 
-    @staticmethod
-    def check_result(result, expected):
-        results_match = True
+    def test_siatec_with_data_from_meredith(self):
+        dataset = Dataset('unittest_data/Meredith2002_fig11.csv')
+        result = new_algorithms.siatec_hash(dataset)
+        exp_res = helpers.get_tecs_for_Meredith2002_fig11()
 
-        for exp in expected:
-            if exp not in result:
-                results_match = False
-                print(exp, 'not in result')
+        print('Result:')
+        helpers.print_tecs(result)
+        print('\nExpected:')
+        helpers.print_tecs(exp_res)
+        print('\n')
 
-        for res in result:
-            if res not in expected:
-                results_match = False
-                print(res, 'not in expected')
+        self.assertEqual(len(result), len(exp_res))
 
-        return results_match
+        # Check that all tecs in best_tecs are valid tecs.
+        for tec in result:
+            self.assertTrue(helpers.tec_in_list(tec, exp_res))
+
+    def test_siatec_hash(self):
+        dataset = Dataset('unittest_data/rand_patterns.csv')
+        result = new_algorithms.siatec_hash(dataset)
+        expected = orig_algorithms.siatec(dataset)
+
+        self.assertEqual(len(result), len(expected))
+
+        for tec in result:
+            self.assertTrue(helpers.tec_in_list(tec, expected))
 
 
 if __name__ == '__main__':

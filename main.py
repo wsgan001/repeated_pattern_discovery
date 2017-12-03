@@ -23,14 +23,21 @@ def run_tec_filtering_algorithms(dataset):
     helpers.print_tecs(orig_algorithms.siatec_compress(deepcopy(dataset)))
 
 
-def hash_function_testing():
-    for i in range(300, 501, 100):
+def test_sia_hash_time():
+    for i in range(100, 1001, 100):
         performance.measure_function(new_algorithms.sia_hash,
                                      Dataset('testfiles/rand_patterns_' + str(i) + '_dim2.csv'), 2)
 
 
+def test_siatec_hash_time():
+    for i in range(100, 1001, 100):
+        performance.measure_function(new_algorithms.siatec_hash,
+                                     Dataset('testfiles/rand_patterns_' + str(i) + '_dim2.csv'), 2)
+
+
 def main():
-    hash_function_testing()
+    test_sia_hash_time()
+    test_siatec_hash_time()
 
 
 if __name__ == "__main__":
