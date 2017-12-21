@@ -57,13 +57,15 @@ def print_v_for_dataset(dataset):
     for i in range(len(dataset)):
         table_lines[0].append('$' + simplified_vec_str(dataset[i]) + '$')
 
-    for i in range(len(dataset)):
+    for i in range(0, len(dataset)):
         table_lines.append(['$' + simplified_vec_str(dataset[i]) + '$'])
+
+    for i in range(len(dataset)):
         for j in range(len(dataset)):
             if i < j:
-                table_lines[i + 1].append('$\\langle ' + simplified_vec_str(dataset[j] - dataset[i]) + ', ' + str(i) + '\\rangle $')
+                table_lines[j + 1].append('$\\langle ' + simplified_vec_str(dataset[j] - dataset[i]) + ', ' + str(i) + '\\rangle $')
             else:
-                table_lines[i + 1].append('\\ ')
+                table_lines[j + 1].append('\\ ')
 
     pos_string = '|'.join(['c' for v in dataset])
     print('\\begin{tabular}[pos]{' + pos_string + '|c}')
