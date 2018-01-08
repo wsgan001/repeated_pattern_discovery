@@ -3,7 +3,7 @@ from tec import TEC
 import helpers
 
 
-def sia_hash(d):
+def siah(d):
     """ Computes the MTPs of dataset d.
         Uses a dictionary/map to avoid having to sort the
         set of difference vectors. Runs in O(kn^2) time. """
@@ -35,7 +35,7 @@ def sia_hash(d):
     return mtps
 
 
-def siatec_hash(d):
+def siatech(d):
     d.sort_ascending()
     # Map of difference vector, index list pairs.
     mtp_map = {}

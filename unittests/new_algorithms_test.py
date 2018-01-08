@@ -10,7 +10,7 @@ class NewAlgorithmsTest(unittest.TestCase):
 
     def test_own_sia(self):
         dataset = Dataset('unittest_data/test_data1.csv')
-        result = new_algorithms.sia_hash(dataset)
+        result = new_algorithms.siah(dataset)
 
         exp_res = []
         exp_res.append((Vector([2, 1]), [Vector([1, 2]), Vector([2, 1])]))
@@ -27,7 +27,7 @@ class NewAlgorithmsTest(unittest.TestCase):
 
     def test_sia_with_data_from_meredith(self):
         dataset = Dataset('unittest_data/Meredith2002_fig11.csv')
-        result = new_algorithms.sia_hash(dataset)
+        result = new_algorithms.siah(dataset)
         helpers.print_mtps(result)
 
         exp_res = []
@@ -50,7 +50,7 @@ class NewAlgorithmsTest(unittest.TestCase):
 
     def test_siatec_with_data_from_meredith(self):
         dataset = Dataset('unittest_data/Meredith2002_fig11.csv')
-        result = new_algorithms.siatec_hash(dataset)
+        result = new_algorithms.siatech(dataset)
         exp_res = helpers.get_tecs_for_Meredith2002_fig11()
 
         print('Result:')
@@ -67,7 +67,7 @@ class NewAlgorithmsTest(unittest.TestCase):
 
     def test_siatec_hash(self):
         dataset = Dataset('unittest_data/rand_patterns.csv')
-        result = new_algorithms.siatec_hash(dataset)
+        result = new_algorithms.siatech(dataset)
         expected = orig_algorithms.siatec(dataset)
 
         self.assertEqual(len(result), len(expected))

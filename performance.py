@@ -1,9 +1,11 @@
 import time
+from datetime import datetime
 from copy import deepcopy
 from dataset import Dataset
+from operator import itemgetter
 
 
-def measure_function(measured_function, input_data, iterations, algorithm_name=''):
+def measure_function(measured_function, input_data, iterations, algorithm_name='', printout=True):
     times = []
 
     for _ in range(iterations):
@@ -20,9 +22,12 @@ def measure_function(measured_function, input_data, iterations, algorithm_name='
     if algorithm_name == '':
         algorithm_name = measured_function.__name__
 
-    print('Algorithm: ' + algorithm_name + '\nDataset: '
-          + input_data.get_name() + '\nAverage time: ' + str(avg_time)
-          + '\nResult size: ' + str(len(result)) + '\n')
+    if printout:
+        print('Algorithm: ' + algorithm_name + '\nDataset: '
+              + input_data.get_name() + ' (n=' + str(len(input_data)) + ')' + '\nAverage time: ' + str(avg_time)
+              + '\nResult size: ' + str(len(result)) + '\n')
+
+    return avg_time, result
 
 
 def measure_time(measured_function, input_data):
@@ -33,16 +38,25 @@ def measure_time(measured_function, input_data):
     return elapsed, result
 
 
-def compare_mtp_algorithms(mtp_algo1, mtp_algo2):
-    measure_function(mtp_algo1, Dataset('testfiles/rand_patterns_100.csv'), 1)
-    measure_function(mtp_algo2, Dataset('testfiles/rand_patterns_100.csv'), 1)
+def measure_function_time_on_datasets(measured_function, dataset_information, dataset_type, algorithm_name=''):
 
-    measure_function(mtp_algo1, Dataset('testfiles/rand_patterns_500.csv'), 1)
-    measure_function(mtp_algo2, Dataset('testfiles/rand_patterns_500.csv'), 1)
+    if algorithm_name == '':
+        algorithm_name = measured_function.__name__
 
-    measure_function(mtp_algo1, Dataset('testfiles/rand_patterns_1000.csv'), 1)
-    measure_function(mtp_algo2, Dataset('testfiles/rand_patterns_1000.csv'), 1)
+    outputrows = []
 
-    measure_function(mtp_algo1, Dataset('testfiles/rand_patterns_1500.csv'), 1)
-    measure_function(mtp_algo2, Dataset('testfiles/rand_patterns_1500.csv'), 1)
+    for dataset_name in dataset_information:
+        iterations = dataset_information[dataset_name]
+        dataset = Dataset(dataset_name)
+        runtime, result = measure_function(measured_function, deepcopy(dataset), iterations, algorithm_name, printout=True)
+        outputrows.append([algorithm_name, dataset.get_name(), str(len(dataset)), str(runtime), str(len(result))])
 
+    outputrows.sort(key=itemgetter(3))
+
+    timestamp = '{:%Y-%m-%d_%H-%M-%S}'.format(datetime.now())
+    output_file_name = 'output/' + algorithm_name + '-' + dataset_type + '-' + timestamp + '.csv'
+    outputfile = open(output_file_name, mode='w')
+    outputfile.write('algorithm, dataset, dataset_size, runtime, result_size\n')
+
+    for outputrow in outputrows:
+        outputfile.write(', '.join(outputrow) + '\n')

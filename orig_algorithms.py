@@ -604,19 +604,21 @@ def siar(d, r):
 
     # Remove duplicates from within_pattern_diffs and order vectors by decreasing frequency.
     within_pattern_diffs.sort()
-    diff_vec = within_pattern_diffs[0]
-    freq = 1
     within_patt_diffs_sorted_by_freq = []
-    for i in range(1, len(within_pattern_diffs)):
-        if within_pattern_diffs[i] == diff_vec:
-            freq += 1
-        else:
-            within_patt_diffs_sorted_by_freq.append((diff_vec, freq))
-            freq = 1
-            diff_vec = within_pattern_diffs[i]
 
-    within_patt_diffs_sorted_by_freq.append((diff_vec, freq))
-    within_patt_diffs_sorted_by_freq.sort(key=itemgetter(1), reverse=True)
+    if within_pattern_diffs:
+        diff_vec = within_pattern_diffs[0]
+        freq = 1
+        for i in range(1, len(within_pattern_diffs)):
+            if within_pattern_diffs[i] == diff_vec:
+                freq += 1
+            else:
+                within_patt_diffs_sorted_by_freq.append((diff_vec, freq))
+                freq = 1
+                diff_vec = within_pattern_diffs[i]
+
+        within_patt_diffs_sorted_by_freq.append((diff_vec, freq))
+        within_patt_diffs_sorted_by_freq.sort(key=itemgetter(1), reverse=True)
 
     # Find the MTP for each vector in within_patt_diffs_sorted_by_freq, store it in mtps and return mtps
     mtps = []
