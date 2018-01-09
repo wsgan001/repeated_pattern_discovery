@@ -1,6 +1,5 @@
 import csv
 from vector import Vector
-from copy import deepcopy
 
 
 class Dataset:

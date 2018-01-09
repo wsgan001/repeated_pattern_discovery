@@ -38,8 +38,11 @@ def measure_tec_algorithm_runtimes():
 
 
 def main():
-    measure_mtp_algorithm_runtimes()
-    measure_tec_algorithm_runtimes()
+    # measure_mtp_algorithm_runtimes()
+    # measure_tec_algorithm_runtimes()
+    performance.measure_function(new_algorithms.siah, Dataset('testfiles/random_patterns/rand_patterns_1000.csv'), iterations=1)
+
+
 
 
 if __name__ == "__main__":

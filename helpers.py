@@ -1,6 +1,6 @@
 from copy import deepcopy
-from tec import TEC
 from vector import Vector
+from tec import TEC
 
 
 def print_mtps(mtps):
@@ -108,3 +108,4 @@ def print_v_for_dataset(dataset):
         print('\t' + ' & '.join(table_lines[i]) + '\\\\')
 
     print('\\end{tabular}')
+

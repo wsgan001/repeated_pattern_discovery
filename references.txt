@@ -8,6 +8,11 @@
     Cognitively-motivated geometric methods of pattern discovery and models of similarity in music.
     PhD thesis, Department of Computing, Goldsmiths, University of London.
 
+[Lemire2014]
+    Lemire, Daniel and Kaser, Owen (2014).
+    Strongly Universal String Hashing is Fast.
+    The Computer Journal, 57:11, 1624-1638
+
 [Meredith2002]
     David Meredith, Kjell Lemström & Geraint A. Wiggins (2002).
     Algorithms for discovering repeated patterns in

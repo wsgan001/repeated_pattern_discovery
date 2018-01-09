@@ -1,22 +1,34 @@
-import math
+from random import randint
+
+
+def generate_random_numbers_for_hashing(n):
+    """ This is used for generating the random multipliers in range [0, 2^64) used for hashing. """
+    rand_vec = []
+    for _ in range(n):
+        rand_vec.append(randint(0, 2**64))
+    return rand_vec
 
 
 class Vector:
     """ Defines a vector and the operations required for expressing symbolic music
         data as vectors as defined in SOURCE """
 
-    _components = []
+    # Random numbers used in hashing of vectors. It is assumed that there are at most 20 dimensions.
+    hash_multipliers = generate_random_numbers_for_hashing(20)
+
+    __components = []
+    __hash_value = None
 
     def __init__(self, components):
-        self._components = components
+        self.__components = components
 
     def dimensionality(self):
         """ Returns the dimensionality of the vector. """
-        return len(self._components)
+        return len(self.__components)
 
     def __getitem__(self, item):
         """ Returns the ith component of the vector """
-        return self._components[item]
+        return self.__components[item]
 
     def __cmp__(self, other):
         """ Vectors are compared using lexicographical ordering. """
@@ -72,21 +84,27 @@ class Vector:
         return Vector(subs_components)
 
     def is_zero(self):
-        for component in self._components:
+        for component in self.__components:
             if component != 0:
                 return False
 
         return True
 
     def __hash__(self):
-        """ Mock version of hashing for testing purposes """
+        """ A hash function ased on theorem 3.1 of [Lemire2014], with K = 64, L = 32.
+            The components are handled as 64 bit floats and not 32 bit integers, so
+            this does not necessarily ensure strongly universal hashing. """
 
-        norm = 0
-        for d in self._components:
-            norm += d * d
+        if not self.__hash_value:
+            s = Vector.hash_multipliers[0]
+            i = 1
+            for d in self.__components:
+                s += Vector.hash_multipliers[i] * d
+                i += 1
 
-        norm *= self._components[0]
-        return hash(norm)
+            self.__hash_value = int(s % 2**64 / 2**31)
+
+        return self.__hash_value
 
     @staticmethod
     def vector_set_to_str(vector_set):
@@ -102,6 +120,4 @@ class Vector:
     @staticmethod
     def zero_vector(dimensionality):
         return Vector([0 for _ in range(dimensionality)])
-
-
 
