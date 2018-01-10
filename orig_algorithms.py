@@ -622,24 +622,35 @@ def siar(d, r):
 
     # Find the MTP for each vector in within_patt_diffs_sorted_by_freq, store it in mtps and return mtps
     mtps = []
-    set_d = set(d)
     for i in range(0, len(within_patt_diffs_sorted_by_freq)):
-        mtps.append(find_mtp(d, within_patt_diffs_sorted_by_freq[i][0], set_d))
+        mtps.append(find_mtp(d, within_patt_diffs_sorted_by_freq[i][0]))
 
     return mtps
 
 
-def find_mtp(d, diff_vec, set_d):
+def find_mtp(d, diff_vec):
     """ Find the MTP for diff_vec by finding the intersection of the sorted dataset
         d and the dataset translated by -diff_vec. """
 
-    pattern = []
+    translated_d = []
 
     for point in d:
-        if point - diff_vec in set_d:
-            pattern.append(point)
+        translated_d.append(point - diff_vec)
 
-    mtp = (diff_vec, pattern)
+    i_d = 0
+    i_td = 0
+    intersection = []
+    while i_d < len(d) and i_td < len(translated_d):
+        if d[i_d] == translated_d[i_td]:
+            intersection.append(d[i_d])
+            i_d += 1
+            i_td += 1
+        elif d[i_d] < translated_d[i_td]:
+            i_d += 1
+        elif d[i_d] > translated_d[i_td]:
+            i_td += 1
+
+    mtp = (diff_vec, intersection)
     return mtp
 
 
