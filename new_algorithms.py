@@ -1,4 +1,7 @@
 from orig_algorithms import vec
+from orig_algorithms import siatec
+from orig_algorithms import sort_tecs_by_quality
+from dataset import Dataset
 from tec import TEC
 import helpers
 
@@ -8,7 +11,7 @@ def siah(d):
         Uses a dictionary/map to avoid having to sort the
         set of difference vectors. Runs in O(kn^2) time. """
 
-    d.sort_ascending()
+    d = Dataset.sort_ascending(d)
     # Map of difference vector, index list pairs.
     mtp_map = {}
 
@@ -36,7 +39,7 @@ def siah(d):
 
 
 def siatech(d):
-    d.sort_ascending()
+    d = Dataset.sort_ascending(d)
     # Map of difference vector, index list pairs.
     mtp_map = {}
 
@@ -120,3 +123,39 @@ def find_translators(mtp, mtp_map, sorted_dataset):
         translators.append(p - last_point)
 
     return translators
+
+
+def cosiatech(d):
+    tecs = siatec(d)
+    sort_tecs_by_quality(tecs, d)
+
+    best_tecs = []
+    covered_points = set() # This is unnecessary, could be implemented by just looking at the indexes in the sorted d
+    for i in range(len(tecs)):
+        tec = tecs[i]
+
+        contains_new_points = True
+        covered_set = tec.coverage()
+
+        for point in covered_set:
+            if point in covered_points:
+                contains_new_points = False
+                break
+
+        if contains_new_points:
+            best_tecs.append(tec)
+            for point in covered_set:
+                covered_points.add(point)
+
+        if len(covered_set) == len(d):
+            break
+
+    residual_points = []
+    for p in d:
+        if p not in covered_points:
+            residual_points.append(p)
+
+    best_tecs.append(TEC(residual_points, [], []))
+
+    return best_tecs
+

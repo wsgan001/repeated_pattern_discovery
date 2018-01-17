@@ -1,5 +1,6 @@
 import csv
 from vector import Vector
+from copy import deepcopy
 
 
 class Dataset:
@@ -51,9 +52,13 @@ class Dataset:
     def __getitem__(self, index):
         return self._vectors[index]
 
-    def sort_ascending(self):
-        self._vectors.sort()
-
     def remove_all(self, vectors):
         for vec in vectors:
             self._vectors.remove(vec)
+
+    @staticmethod
+    def sort_ascending(dataset):
+        """ Returns a copy of the dataset in ascending lexicographical order. """
+        dataset_copy = deepcopy(dataset)
+        dataset_copy._vectors.sort()
+        return dataset_copy

@@ -24,6 +24,8 @@ class TEC:
         return self._translators
 
     def __str__(self):
+        self._pattern.sort()
+        self._translators.sort()
         return Vector.vector_set_to_str(self._pattern) + ', ' + Vector.vector_set_to_str(self._translators)
 
     def __eq__(self, other):

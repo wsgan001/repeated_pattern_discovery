@@ -9,7 +9,7 @@ class HeuristicTest(unittest.TestCase):
 
     def test_bounding_box(self):
         dataset = Dataset('unittest_data/heuristics_test.csv')
-        dataset.sort_ascending()
+        dataset = Dataset.sort_ascending(dataset)
         tec = TEC([Vector([1, 3]), Vector([3, 5]), Vector([4, 1]), Vector([5, 3])], [0, 3, 4, 6], [Vector([0, 0])])
         self.assertEqual(heuristics.bounding_box_compactness(tec, dataset), 4/9)
 

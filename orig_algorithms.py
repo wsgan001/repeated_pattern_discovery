@@ -2,6 +2,7 @@ from vector import Vector
 from functools import cmp_to_key
 from copy import deepcopy
 from operator import itemgetter
+from dataset import Dataset
 import heuristics
 from tec import TEC
 
@@ -16,7 +17,7 @@ def sia(d):
         element is a list of vectors that form the corresponding pattern. """
 
     # Step 1: Sort the dataset in ascending order
-    d.sort_ascending()
+    d = Dataset.sort_ascending(d)
 
     # Step 2: Compute the vector table V
     v = []
@@ -65,7 +66,7 @@ def siatec(d):
         element is the MTP and the second element is the list of translators. """
 
     # Step 1: Sort dataset
-    d.sort_ascending()
+    d = Dataset.sort_ascending(d)
 
     # Step 2 and 3: Compute vector tables w and v
     w = []
@@ -234,7 +235,7 @@ def find_translators(pattern_indices, w, data_size):
 
 def cosiatec(d):
     """ Implements the COSIATEC algorithm as described in [Meredith2013]. """
-    d.sort_ascending()
+    d = Dataset.sort_ascending(d)
     p = deepcopy(d)
     best_tecs = []
 
@@ -249,7 +250,7 @@ def cosiatec(d):
 def siatec_compress(d):
     """ Implements the SIATECCompress algorithm described in [Meredith2013]. """
 
-    d.sort_ascending()
+    d = Dataset.sort_ascending(d)
     v, w = compute_vector_tables(d)
     mcps = compute_mtp_cis_pairs(v)
     remove_trans_eq_mtps(mcps)
@@ -335,6 +336,8 @@ def compute_encoding(tecs, d):
 
             if dataset_covered:
                 break
+
+    # TODO: Add residual point set?
 
     return best_tecs
 
@@ -568,7 +571,7 @@ def siar(d, r):
     """ Implements SIAR as defined in [Collins2011] and [Meredith2016] Fig.13.14.
         Takes as parameters the dataset d and the number of subdiagonals r."""
 
-    d.sort_ascending()
+    d = Dataset.sort_ascending(d)
 
     # Compute r subdiagonals of vector table and store in diffs_on_diagonals
     diffs_on_diagonals = []

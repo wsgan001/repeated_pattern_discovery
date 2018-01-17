@@ -1,6 +1,7 @@
 from copy import deepcopy
 from vector import Vector
 from tec import TEC
+from dataset import Dataset
 
 
 def print_mtps(mtps):
@@ -33,6 +34,24 @@ def mtp_sets_are_same(mtps1, mtps2):
     mtps2_c.sort()
 
     return mtps1_c == mtps2_c
+
+
+def tec_sets_are_same(tecs1, tecs2):
+
+    covered_sets1 = get_covered_sets_of_tec_list(tecs1)
+    covered_sets2 = get_covered_sets_of_tec_list(tecs2)
+
+    return covered_sets1 == covered_sets2
+
+
+def get_covered_sets_of_tec_list(tecs):
+    covered_sets = []
+    for t in tecs:
+        cov_list = list(t.coverage())
+        cov_list.sort()
+        covered_sets.append(cov_list)
+
+    return covered_sets
 
 
 def check_result(result, expected):
@@ -85,7 +104,7 @@ def simplified_vec_str(vec):
 
 def print_v_for_dataset(dataset):
     """ Prints the difference vector table V for a dataset in a format almost suitable for copypasting to LaTeX. """
-    dataset.sort_ascending()
+    dataset = Dataset.sort_ascending(dataset)
     table_lines = [['\ ']]
 
     for i in range(len(dataset)):

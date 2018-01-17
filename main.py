@@ -40,9 +40,10 @@ def measure_tec_algorithm_runtimes():
 def main():
     # measure_mtp_algorithm_runtimes()
     # measure_tec_algorithm_runtimes()
-    performance.measure_function(new_algorithms.siah, Dataset('testfiles/random_patterns/rand_patterns_1000.csv'), iterations=1)
-
-
+    dataset = Dataset('testfiles/random_patterns/rand_patterns_10_dim2.csv')
+    sorted_d = Dataset.sort_ascending(dataset)
+    mtps = orig_algorithms.sia(dataset)
+    helpers.print_mtps(mtps)
 
 
 if __name__ == "__main__":
