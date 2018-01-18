@@ -130,96 +130,81 @@ def create_mtp_count_maximizing_dataset(filename, n):
 
 
 def get_random_patterns_set():
-    rand_patterns = {'testfiles/random_patterns/rand_patterns_1000.csv': 5,
-                     'testfiles/random_patterns/rand_patterns_2000.csv': 5,
-                     'testfiles/random_patterns/rand_patterns_3000.csv': 5,
-                     'testfiles/random_patterns/rand_patterns_4000.csv': 5,
-                     'testfiles/random_patterns/rand_patterns_5000.csv': 4,
-                     'testfiles/random_patterns/rand_patterns_6000.csv': 4,
-                     'testfiles/random_patterns/rand_patterns_7000.csv': 4,
-                     'testfiles/random_patterns/rand_patterns_8000.csv': 3,
-                     'testfiles/random_patterns/rand_patterns_9000.csv': 3,
-                     'testfiles/random_patterns/rand_patterns_10000.csv': 3,
-                     'testfiles/random_patterns/rand_patterns_11000.csv': 3,
-                     'testfiles/random_patterns/rand_patterns_12000.csv': 3,
-                     'testfiles/random_patterns/rand_patterns_13000.csv': 3,
-                     'testfiles/random_patterns/rand_patterns_14000.csv': 3,
-                     'testfiles/random_patterns/rand_patterns_15000.csv': 3}
+    rand_patterns = {'testfiles/random_patterns/rand_patterns_1000.csv': 3,
+                     'testfiles/random_patterns/rand_patterns_2000.csv': 3,
+                     'testfiles/random_patterns/rand_patterns_3000.csv': 3,
+                     'testfiles/random_patterns/rand_patterns_4000.csv': 3,
+                     'testfiles/random_patterns/rand_patterns_5000.csv': 3,
+                     'testfiles/random_patterns/rand_patterns_6000.csv': 2,
+                     'testfiles/random_patterns/rand_patterns_7000.csv': 2,
+                     'testfiles/random_patterns/rand_patterns_8000.csv': 2,
+                     'testfiles/random_patterns/rand_patterns_9000.csv': 2,
+                     'testfiles/random_patterns/rand_patterns_10000.csv': 2}
 
     return rand_patterns
 
 
 def get_mtp_count_max_dataset():
-    mtp_count_max = {'testfiles/mtp_count_max/mtp_count_max_1000.csv': 5,
-                     'testfiles/mtp_count_max/mtp_count_max_2000.csv': 5,
-                     'testfiles/mtp_count_max/mtp_count_max_3000.csv': 5,
-                     'testfiles/mtp_count_max/mtp_count_max_4000.csv': 5,
-                     'testfiles/mtp_count_max/mtp_count_max_5000.csv': 4,
-                     'testfiles/mtp_count_max/mtp_count_max_6000.csv': 4,
-                     'testfiles/mtp_count_max/mtp_count_max_7000.csv': 4,
-                     'testfiles/mtp_count_max/mtp_count_max_8000.csv': 3,
-                     'testfiles/mtp_count_max/mtp_count_max_9000.csv': 3,
-                     'testfiles/mtp_count_max/mtp_count_max_10000.csv': 3,
-                     'testfiles/mtp_count_max/mtp_count_max_11000.csv': 3,
-                     'testfiles/mtp_count_max/mtp_count_max_12000.csv': 3,
-                     'testfiles/mtp_count_max/mtp_count_max_13000.csv': 3,
-                     'testfiles/mtp_count_max/mtp_count_max_14000.csv': 3,
-                     'testfiles/mtp_count_max/mtp_count_max_15000.csv': 3}
+    mtp_count_max = {'testfiles/mtp_count_max/mtp_count_max_1000.csv': 3,
+                     'testfiles/mtp_count_max/mtp_count_max_2000.csv': 3,
+                     'testfiles/mtp_count_max/mtp_count_max_3000.csv': 3,
+                     'testfiles/mtp_count_max/mtp_count_max_4000.csv': 3,
+                     'testfiles/mtp_count_max/mtp_count_max_5000.csv': 3,
+                     'testfiles/mtp_count_max/mtp_count_max_6000.csv': 2,
+                     'testfiles/mtp_count_max/mtp_count_max_7000.csv': 2,
+                     'testfiles/mtp_count_max/mtp_count_max_8000.csv': 2,
+                     'testfiles/mtp_count_max/mtp_count_max_9000.csv': 2,
+                     'testfiles/mtp_count_max/mtp_count_max_10000.csv': 2}
 
     return mtp_count_max
 
 
 def get_mtp_count_min_dataset():
-    mtp_count_min = {'testfiles/mtp_count_min/mtp_count_min_1000.csv': 5,
-                     'testfiles/mtp_count_min/mtp_count_min_2000.csv': 5,
-                     'testfiles/mtp_count_min/mtp_count_min_3000.csv': 5,
-                     'testfiles/mtp_count_min/mtp_count_min_4000.csv': 5,
-                     'testfiles/mtp_count_min/mtp_count_min_5000.csv': 4,
-                     'testfiles/mtp_count_min/mtp_count_min_6000.csv': 4,
-                     'testfiles/mtp_count_min/mtp_count_min_7000.csv': 4,
-                     'testfiles/mtp_count_min/mtp_count_min_8000.csv': 3,
-                     'testfiles/mtp_count_min/mtp_count_min_9000.csv': 3,
-                     'testfiles/mtp_count_min/mtp_count_min_10000.csv': 3,
-                     'testfiles/mtp_count_min/mtp_count_min_11000.csv': 3,
-                     'testfiles/mtp_count_min/mtp_count_min_12000.csv': 3,
-                     'testfiles/mtp_count_min/mtp_count_min_13000.csv': 3,
-                     'testfiles/mtp_count_min/mtp_count_min_14000.csv': 3,
-                     'testfiles/mtp_count_min/mtp_count_min_15000.csv': 3}
+    mtp_count_min = {'testfiles/mtp_count_min/mtp_count_min_1000.csv': 3,
+                     'testfiles/mtp_count_min/mtp_count_min_2000.csv': 3,
+                     'testfiles/mtp_count_min/mtp_count_min_3000.csv': 3,
+                     'testfiles/mtp_count_min/mtp_count_min_4000.csv': 3,
+                     'testfiles/mtp_count_min/mtp_count_min_5000.csv': 3,
+                     'testfiles/mtp_count_min/mtp_count_min_6000.csv': 2,
+                     'testfiles/mtp_count_min/mtp_count_min_7000.csv': 2,
+                     'testfiles/mtp_count_min/mtp_count_min_8000.csv': 2,
+                     'testfiles/mtp_count_min/mtp_count_min_9000.csv': 2,
+                     'testfiles/mtp_count_min/mtp_count_min_10000.csv': 2}
 
     return mtp_count_min
 
 
 def get_bach_wtk_datasets():
-    bach = {'testfiles/music_corpus/bach_wtk/bwv846': 3,
-            'testfiles/music_corpus/bach_wtk/bwv847': 3,
-            'testfiles/music_corpus/bach_wtk/bwv848': 3,
-            'testfiles/music_corpus/bach_wtk/bwv849': 3,
-            'testfiles/music_corpus/bach_wtk/bwv850': 3,
-            'testfiles/music_corpus/bach_wtk/bwv851': 3,
-            'testfiles/music_corpus/bach_wtk/bwv852': 3,
-            'testfiles/music_corpus/bach_wtk/bwv853': 3,
-            'testfiles/music_corpus/bach_wtk/bwv854': 3,
-            'testfiles/music_corpus/bach_wtk/bwv855': 3,
-            'testfiles/music_corpus/bach_wtk/bwv856': 3,
-            'testfiles/music_corpus/bach_wtk/bwv857': 3,
-            'testfiles/music_corpus/bach_wtk/bwv858': 3,
-            'testfiles/music_corpus/bach_wtk/bwv859': 3,
-            'testfiles/music_corpus/bach_wtk/bwv860': 3,
-            'testfiles/music_corpus/bach_wtk/bwv861': 3,
-            'testfiles/music_corpus/bach_wtk/bwv862': 3,
-            'testfiles/music_corpus/bach_wtk/bwv863': 3,
-            'testfiles/music_corpus/bach_wtk/bwv864': 3,
-            'testfiles/music_corpus/bach_wtk/bwv865': 3,
-            'testfiles/music_corpus/bach_wtk/bwv866': 3,
-            'testfiles/music_corpus/bach_wtk/bwv867': 3,
-            'testfiles/music_corpus/bach_wtk/bwv868': 3,
-            'testfiles/music_corpus/bach_wtk/bwv869': 3}
+    bach = {'testfiles/music_corpus/bach_wtk/bwv846': 2,
+            'testfiles/music_corpus/bach_wtk/bwv847': 2,
+            'testfiles/music_corpus/bach_wtk/bwv848': 2,
+            'testfiles/music_corpus/bach_wtk/bwv849': 2,
+            'testfiles/music_corpus/bach_wtk/bwv850': 2,
+            'testfiles/music_corpus/bach_wtk/bwv851': 2,
+            'testfiles/music_corpus/bach_wtk/bwv852': 2,
+            'testfiles/music_corpus/bach_wtk/bwv853': 2,
+            'testfiles/music_corpus/bach_wtk/bwv854': 2,
+            'testfiles/music_corpus/bach_wtk/bwv855': 2,
+            'testfiles/music_corpus/bach_wtk/bwv856': 2,
+            'testfiles/music_corpus/bach_wtk/bwv857': 2,
+            'testfiles/music_corpus/bach_wtk/bwv858': 2,
+            'testfiles/music_corpus/bach_wtk/bwv859': 2,
+            'testfiles/music_corpus/bach_wtk/bwv860': 2,
+            'testfiles/music_corpus/bach_wtk/bwv861': 2,
+            'testfiles/music_corpus/bach_wtk/bwv862': 2,
+            'testfiles/music_corpus/bach_wtk/bwv863': 2,
+            'testfiles/music_corpus/bach_wtk/bwv864': 2,
+            'testfiles/music_corpus/bach_wtk/bwv865': 2,
+            'testfiles/music_corpus/bach_wtk/bwv866': 2,
+            'testfiles/music_corpus/bach_wtk/bwv867': 2,
+            'testfiles/music_corpus/bach_wtk/bwv868': 2,
+            'testfiles/music_corpus/bach_wtk/bwv869': 2}
 
     return bach
 
 
 def main():
-    create_random_datafiles((1000, 15000), 1000, 2)
+    pass
 
 
 if __name__ == '__main__':
