@@ -18,6 +18,24 @@ def print_mtps(mtps):
         print(mtp_string)
 
 
+def print_mtp_set_properties(mtps, dataset):
+    print('Number of MTPs:', len(mtps))
+    print('Max number of MTPs in dataset:', int(len(dataset) * (len(dataset) - 1) / 2))
+    print('Min number of MTPs in dataset:', len(dataset) - 1)
+    
+    avg_size = 0
+    size_of_largest = 0
+    for mtp in mtps:
+        mtp_size = len(mtp[1])
+        avg_size += mtp_size
+        if mtp_size > size_of_largest:
+            size_of_largest = mtp_size
+
+    avg_size /= len(mtps)
+    print('Average MTP size:', avg_size)
+    print('Largest MTP size:', size_of_largest)
+
+
 def print_tecs(tecs):
     print('Printing TECs, count=' + str(len(tecs)))
     for tec in tecs:

@@ -11,7 +11,7 @@ def generate_random_numbers_for_hashing(n):
 
 class Vector:
     """ Defines a vector and the operations required for expressing symbolic music
-        data as vectors as defined in SOURCE """
+        data as vectors as defined in [Meredith2002] """
 
     # Random numbers used in hashing of vectors. It is assumed that there are at most 20 dimensions.
     hash_multipliers = generate_random_numbers_for_hashing(20)
@@ -91,7 +91,7 @@ class Vector:
         return True
 
     def __hash__(self):
-        """ A hash function ased on theorem 3.1 of [Lemire2014], with K = 64, L = 32.
+        """ A hash function based on theorem 3.1 of [Lemire2014], with K = 64, L = 32.
             The components are handled as 64 bit floats and not 32 bit integers, so
             this does not necessarily ensure strongly universal hashing. """
 

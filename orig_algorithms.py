@@ -44,7 +44,6 @@ def compute_mtps(v, d):
     i = 0
 
     while i < len(v):
-        trans_vector = v[i][0]
         pattern = []
         pattern.append(d[v[i][1]])
 
@@ -53,8 +52,8 @@ def compute_mtps(v, d):
             pattern.append(d[v[j][1]])
             j += 1
 
+        mtps.append((v[i][0], pattern))
         i = j
-        mtps.append((trans_vector, pattern))
 
     return mtps
 

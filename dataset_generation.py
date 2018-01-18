@@ -1,6 +1,6 @@
 import random
 from vector import Vector
-import music21
+#import music21
 from os import listdir
 from os.path import isfile, join
 
@@ -12,47 +12,45 @@ def create_random_data_file(n, dimensionality, filename):
         f.write(vector_to_csv_line(get_random_vector(dimensionality, 0, 500)))
 
 
-def create_data_file_with_random_patterns(n, max_pattern_size, max_reps, num_patterns, dimensionality, filename):
+def create_data_file_with_random_patterns(n, min_pattern_size, max_pattern_size, max_reps, dimensionality, filename):
     f = open(filename, mode='w')
 
     dataset_vectors = set()
 
     while len(dataset_vectors) <= n:
-        for _ in range(0, num_patterns):
-            pattern = []
-            pattern_size = random.randint(1, max_pattern_size)
-            for _ in range(0, pattern_size):
-                v = get_random_vector(dimensionality, 0, 500)
-                while v in dataset_vectors:
-                    v = get_random_vector(dimensionality, 0, 500)
+        pattern_size = random.randint(min_pattern_size, max_pattern_size)
+        pattern = get_random_pattern(pattern_size, dimensionality)
 
-                pattern.append(v)
+        for v in pattern:
+            dataset_vectors.add(v)
 
-            for v in pattern:
-                dataset_vectors.add(v)
+        repetitions = random.randint(1, max_reps)
+        for _ in range(0, repetitions):
+            rand_vector = get_random_vector(dimensionality, 0, 1000)
 
-            repetitions = random.randint(0, max_reps)
-            for _ in range(0, repetitions):
-                rand_components = []
-                for _ in range(dimensionality):
-                    rand_components.append(random.randint(0, 300))
-
-                rand_vector = Vector(rand_components)
-
-                for p in pattern:
-                    translated_vec = p + rand_vector
-                    dataset_vectors.add(translated_vec)
+            for p in pattern:
+                translated_vec = p + rand_vector
+                dataset_vectors.add(translated_vec)
 
     for vec in list(dataset_vectors)[0:n]:
         f.write(vector_to_csv_line(vec))
 
 
+def get_random_pattern(pattern_size, dimensionality):
+    pattern = []
+
+    for _ in range(pattern_size):
+        pattern.append(get_random_vector(dimensionality, 0, 1000))
+
+    return pattern
+
+
 def get_random_vector(dimensionality, min_val, max_val):
     components = []
     for _ in range(0, dimensionality):
-        rint = float(random.randint(min_val, max_val))
-        rint += random.randint(1, 4) / 4
-        components.append(rint)
+        random_component = float(random.randint(min_val, max_val))
+        random_component += random.randint(1, 4) / 4
+        components.append(random_component)
 
     return Vector(components)
 
@@ -68,7 +66,7 @@ def vector_to_csv_line(vec):
 def csv_from_midi(midi_file_name, csv_name):
     """ Creates a two-dimensional point set (onset time, chromatic pitch) from midi file. """
 
-    midi_file = music21.midi.MidiFile()
+    midi_file = None # music21.midi.MidiFile()
     midi_file.open(filename=midi_file_name)
     midi_file.read()
 
@@ -81,11 +79,16 @@ def csv_from_midi(midi_file_name, csv_name):
 
             if event.type == 'NOTE_ON':
                 pitch = event._getData()
-                vectors.add(Vector([time/midi_file.ticksPerQuarterNote, pitch]))
+                vectors.add(Vector([compute_onset_time(time, midi_file.ticksPerQuarterNote), pitch]))
 
     output_file = open(csv_name, mode='w')
     for vector in list(vectors):
         output_file.write(vector_to_csv_line(vector))
+
+
+def compute_onset_time(event_time, ticks_per_quarter):
+    unquantized = event_time/ticks_per_quarter
+    return round(unquantized*4)/4
 
 
 def create_csvs_from_midis(input_dir, output_dir):
@@ -107,8 +110,8 @@ def create_csvs_from_midis(input_dir, output_dir):
 
 def create_random_datafiles(limits, increment, dimensionality):
     for n in range(limits[0], limits[1] + 1, increment):
-        create_data_file_with_random_patterns(n, 5, 5, 5, dimensionality, 'testfiles/rand_patterns_'
-                                                + str(n) + '_dim' + str(dimensionality) + '.csv')
+        create_data_file_with_random_patterns(n, int(n/100), int(n/4), 30, dimensionality,
+                                              'testfiles/random_patterns/rand_patterns_' + str(n) + '.csv')
 
 
 def create_mtp_count_minimizing_dataset(filename, n):
@@ -127,21 +130,21 @@ def create_mtp_count_maximizing_dataset(filename, n):
 
 
 def get_random_patterns_set():
-    rand_patterns = {'testfiles/random_patterns/rand_patterns_1000_dim2.csv': 5,
-                     'testfiles/random_patterns/rand_patterns_2000_dim2.csv': 5,
-                     'testfiles/random_patterns/rand_patterns_3000_dim2.csv': 5,
-                     'testfiles/random_patterns/rand_patterns_4000_dim2.csv': 5,
-                     'testfiles/random_patterns/rand_patterns_5000_dim2.csv': 4,
-                     'testfiles/random_patterns/rand_patterns_6000_dim2.csv': 4,
-                     'testfiles/random_patterns/rand_patterns_7000_dim2.csv': 4,
-                     'testfiles/random_patterns/rand_patterns_8000_dim2.csv': 3,
-                     'testfiles/random_patterns/rand_patterns_9000_dim2.csv': 3,
-                     'testfiles/random_patterns/rand_patterns_10000_dim2.csv': 2,
-                     'testfiles/random_patterns/rand_patterns_11000_dim2.csv': 2,
-                     'testfiles/random_patterns/rand_patterns_12000_dim2.csv': 2,
-                     'testfiles/random_patterns/rand_patterns_13000_dim2.csv': 2,
-                     'testfiles/random_patterns/rand_patterns_14000_dim2.csv': 2,
-                     'testfiles/random_patterns/rand_patterns_15000_dim2.csv': 2}
+    rand_patterns = {'testfiles/random_patterns/rand_patterns_1000.csv': 5,
+                     'testfiles/random_patterns/rand_patterns_2000.csv': 5,
+                     'testfiles/random_patterns/rand_patterns_3000.csv': 5,
+                     'testfiles/random_patterns/rand_patterns_4000.csv': 5,
+                     'testfiles/random_patterns/rand_patterns_5000.csv': 4,
+                     'testfiles/random_patterns/rand_patterns_6000.csv': 4,
+                     'testfiles/random_patterns/rand_patterns_7000.csv': 4,
+                     'testfiles/random_patterns/rand_patterns_8000.csv': 3,
+                     'testfiles/random_patterns/rand_patterns_9000.csv': 3,
+                     'testfiles/random_patterns/rand_patterns_10000.csv': 3,
+                     'testfiles/random_patterns/rand_patterns_11000.csv': 3,
+                     'testfiles/random_patterns/rand_patterns_12000.csv': 3,
+                     'testfiles/random_patterns/rand_patterns_13000.csv': 3,
+                     'testfiles/random_patterns/rand_patterns_14000.csv': 3,
+                     'testfiles/random_patterns/rand_patterns_15000.csv': 3}
 
     return rand_patterns
 
@@ -156,12 +159,12 @@ def get_mtp_count_max_dataset():
                      'testfiles/mtp_count_max/mtp_count_max_7000.csv': 4,
                      'testfiles/mtp_count_max/mtp_count_max_8000.csv': 3,
                      'testfiles/mtp_count_max/mtp_count_max_9000.csv': 3,
-                     'testfiles/mtp_count_max/mtp_count_max_10000.csv': 2,
-                     'testfiles/mtp_count_max/mtp_count_max_11000.csv': 2,
-                     'testfiles/mtp_count_max/mtp_count_max_12000.csv': 2,
-                     'testfiles/mtp_count_max/mtp_count_max_13000.csv': 2,
-                     'testfiles/mtp_count_max/mtp_count_max_14000.csv': 2,
-                     'testfiles/mtp_count_max/mtp_count_max_15000.csv': 2}
+                     'testfiles/mtp_count_max/mtp_count_max_10000.csv': 3,
+                     'testfiles/mtp_count_max/mtp_count_max_11000.csv': 3,
+                     'testfiles/mtp_count_max/mtp_count_max_12000.csv': 3,
+                     'testfiles/mtp_count_max/mtp_count_max_13000.csv': 3,
+                     'testfiles/mtp_count_max/mtp_count_max_14000.csv': 3,
+                     'testfiles/mtp_count_max/mtp_count_max_15000.csv': 3}
 
     return mtp_count_max
 
@@ -176,18 +179,47 @@ def get_mtp_count_min_dataset():
                      'testfiles/mtp_count_min/mtp_count_min_7000.csv': 4,
                      'testfiles/mtp_count_min/mtp_count_min_8000.csv': 3,
                      'testfiles/mtp_count_min/mtp_count_min_9000.csv': 3,
-                     'testfiles/mtp_count_min/mtp_count_min_10000.csv': 2,
-                     'testfiles/mtp_count_min/mtp_count_min_11000.csv': 2,
-                     'testfiles/mtp_count_min/mtp_count_min_12000.csv': 2,
-                     'testfiles/mtp_count_min/mtp_count_min_13000.csv': 2,
-                     'testfiles/mtp_count_min/mtp_count_min_14000.csv': 2,
-                     'testfiles/mtp_count_min/mtp_count_min_15000.csv': 2}
+                     'testfiles/mtp_count_min/mtp_count_min_10000.csv': 3,
+                     'testfiles/mtp_count_min/mtp_count_min_11000.csv': 3,
+                     'testfiles/mtp_count_min/mtp_count_min_12000.csv': 3,
+                     'testfiles/mtp_count_min/mtp_count_min_13000.csv': 3,
+                     'testfiles/mtp_count_min/mtp_count_min_14000.csv': 3,
+                     'testfiles/mtp_count_min/mtp_count_min_15000.csv': 3}
 
     return mtp_count_min
 
 
+def get_bach_wtk_datasets():
+    bach = {'testfiles/music_corpus/bach_wtk/bwv846': 3,
+            'testfiles/music_corpus/bach_wtk/bwv847': 3,
+            'testfiles/music_corpus/bach_wtk/bwv848': 3,
+            'testfiles/music_corpus/bach_wtk/bwv849': 3,
+            'testfiles/music_corpus/bach_wtk/bwv850': 3,
+            'testfiles/music_corpus/bach_wtk/bwv851': 3,
+            'testfiles/music_corpus/bach_wtk/bwv852': 3,
+            'testfiles/music_corpus/bach_wtk/bwv853': 3,
+            'testfiles/music_corpus/bach_wtk/bwv854': 3,
+            'testfiles/music_corpus/bach_wtk/bwv855': 3,
+            'testfiles/music_corpus/bach_wtk/bwv856': 3,
+            'testfiles/music_corpus/bach_wtk/bwv857': 3,
+            'testfiles/music_corpus/bach_wtk/bwv858': 3,
+            'testfiles/music_corpus/bach_wtk/bwv859': 3,
+            'testfiles/music_corpus/bach_wtk/bwv860': 3,
+            'testfiles/music_corpus/bach_wtk/bwv861': 3,
+            'testfiles/music_corpus/bach_wtk/bwv862': 3,
+            'testfiles/music_corpus/bach_wtk/bwv863': 3,
+            'testfiles/music_corpus/bach_wtk/bwv864': 3,
+            'testfiles/music_corpus/bach_wtk/bwv865': 3,
+            'testfiles/music_corpus/bach_wtk/bwv866': 3,
+            'testfiles/music_corpus/bach_wtk/bwv867': 3,
+            'testfiles/music_corpus/bach_wtk/bwv868': 3,
+            'testfiles/music_corpus/bach_wtk/bwv869': 3}
+
+    return bach
+
+
 def main():
-    create_csvs_from_midis('testfiles/midi_files/bach_wtk', 'testfiles/music_corpus/bach_wtk')
+    create_random_datafiles((1000, 15000), 1000, 2)
 
 
 if __name__ == '__main__':
