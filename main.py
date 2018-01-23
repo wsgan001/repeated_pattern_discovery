@@ -18,11 +18,9 @@ def measure_mtp_algorithm_runtimes():
     rand_patterns = dataset_generation.get_random_patterns_set()
     mtp_count_max = dataset_generation.get_mtp_count_max_dataset()
     mtp_count_min = dataset_generation.get_mtp_count_min_dataset()
-    bach_data_set = dataset_generation.get_bach_wtk_datasets()
     measure_mtp_algorithms_on_datasets(rand_patterns, 'rand_patterns')
     measure_mtp_algorithms_on_datasets(mtp_count_max, 'mtp_count_max')
     measure_mtp_algorithms_on_datasets(mtp_count_min, 'mtp_count_min')
-    measure_mtp_algorithms_on_datasets(bach_data_set, 'bach_wtk')
 
 
 def measure_tec_algorithms_on_datasets(datasets, datasets_name):
@@ -34,12 +32,10 @@ def measure_tec_algorithm_runtimes():
     rand_patterns = dataset_generation.get_random_patterns_set()
     mtp_count_max = dataset_generation.get_mtp_count_max_dataset()
     mtp_count_min = dataset_generation.get_mtp_count_min_dataset()
-    bach_data_set = dataset_generation.get_bach_wtk_datasets()
     measure_tec_algorithms_on_datasets(rand_patterns, 'rand_patterns')
     measure_tec_algorithms_on_datasets(mtp_count_max, 'mtp_count_max')
     measure_tec_algorithms_on_datasets(mtp_count_min, 'mtp_count_min')
-    measure_tec_algorithms_on_datasets(bach_data_set, 'bach_wtk')
-
+    
 
 def main():
     measure_mtp_algorithm_runtimes()
