@@ -8,7 +8,7 @@ import helpers
 
 def measure_mtp_algorithms_on_datasets(datasets, datasets_name):
     performance.measure_function_time_on_datasets(orig_algorithms.sia, datasets, datasets_name)
-    r = 5
+    r = 3
     performance.measure_function_time_on_datasets(lambda d: orig_algorithms.siar(d, r), datasets,
                                                   datasets_name, algorithm_name='siar(r=' + str(r) + ')')
     performance.measure_function_time_on_datasets(new_algorithms.siah, datasets, datasets_name)
@@ -35,11 +35,11 @@ def measure_tec_algorithm_runtimes():
     measure_tec_algorithms_on_datasets(rand_patterns, 'rand_patterns')
     measure_tec_algorithms_on_datasets(mtp_count_max, 'mtp_count_max')
     measure_tec_algorithms_on_datasets(mtp_count_min, 'mtp_count_min')
-    
+
 
 def main():
     measure_mtp_algorithm_runtimes()
-
+    
 
 if __name__ == "__main__":
     main()

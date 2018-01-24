@@ -54,7 +54,7 @@ def measure_function_time_on_datasets(measured_function, dataset_information, da
     outputrows.sort(key=itemgetter(3))
 
     timestamp = '{:%Y-%m-%d_%H-%M-%S}'.format(datetime.now())
-    output_file_name = 'output/runtimes' + algorithm_name + '-' + dataset_type + '-' + timestamp + '.csv'
+    output_file_name = 'output/runtimes/' + algorithm_name + '-' + dataset_type + '-' + timestamp + '.csv'
     outputfile = open(output_file_name, mode='w')
     outputfile.write('algorithm, dataset, dataset_size, runtime, result_size\n')
 
