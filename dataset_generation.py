@@ -135,7 +135,8 @@ def get_random_patterns_set():
                      'testfiles/random_patterns/rand_patterns_3000.csv': 3,
                      'testfiles/random_patterns/rand_patterns_4000.csv': 3,
                      'testfiles/random_patterns/rand_patterns_5000.csv': 3,
-                     'testfiles/random_patterns/rand_patterns_6000.csv': 2}
+                     'testfiles/random_patterns/rand_patterns_6000.csv': 2,
+                     'testfiles/random_patterns/rand_patterns_7000.csv': 2}
 
     return rand_patterns
 
@@ -146,7 +147,8 @@ def get_mtp_count_max_dataset():
                      'testfiles/mtp_count_max/mtp_count_max_3000.csv': 3,
                      'testfiles/mtp_count_max/mtp_count_max_4000.csv': 3,
                      'testfiles/mtp_count_max/mtp_count_max_5000.csv': 3,
-                     'testfiles/mtp_count_max/mtp_count_max_6000.csv': 2}
+                     'testfiles/mtp_count_max/mtp_count_max_6000.csv': 2,
+                     'testfiles/mtp_count_max/mtp_count_max_7000.csv': 2}
 
     return mtp_count_max
 
@@ -157,7 +159,8 @@ def get_mtp_count_min_dataset():
                      'testfiles/mtp_count_min/mtp_count_min_3000.csv': 3,
                      'testfiles/mtp_count_min/mtp_count_min_4000.csv': 3,
                      'testfiles/mtp_count_min/mtp_count_min_5000.csv': 3,
-                     'testfiles/mtp_count_min/mtp_count_min_6000.csv': 2}
+                     'testfiles/mtp_count_min/mtp_count_min_6000.csv': 2,
+                     'testfiles/mtp_count_min/mtp_count_min_7000.csv': 2}
 
     return mtp_count_min
 
