@@ -3,6 +3,7 @@ from orig_algorithms import siatec
 from orig_algorithms import sort_tecs_by_quality
 from dataset import Dataset
 from tec import TEC
+from pattern import Pattern
 
 
 def siah(d):
@@ -54,6 +55,7 @@ def siatech(d):
                 mtp_map[diff] = [(i, j)]
 
     tecs = []
+    single_point_pattern_handled = False
     handled_patterns = set()
 
     for diff_vec in mtp_map:
@@ -65,35 +67,27 @@ def siatech(d):
             pattern_indices.append(index_pair[0])
             pattern.append(d[index_pair[0]])
 
-        # This is just mock idea for removing duplicates
-        string_key = ''
-        for vect in vec(pattern):
-            string_key += str(vect)
+        vectorized_pattern = Pattern(vec(pattern))
 
-        # --
+        if vectorized_pattern not in handled_patterns:
+            translators = []
+            if len(pattern) == 1 and not single_point_pattern_handled:
+                for point in d:
+                    translators.append(point - pattern[0])
+                single_point_pattern_handled = True
+            else:
+                translators = find_translators(pattern, vectorized_pattern, mtp_map, d)
 
-        if string_key not in handled_patterns:
-            translators = find_translators(pattern, mtp_map, d)
             tecs.append(TEC(pattern, pattern_indices, translators))
-            handled_patterns.add(string_key)
+            handled_patterns.add(vectorized_pattern)
 
     return tecs
 
 
-def find_translators(mtp, mtp_map, sorted_dataset):
-    # TODO: Ensure that pattern does not need to be sorted before vec.
-
-    if len(mtp) == 1:
-        all_translators = []
-        for point in sorted_dataset:
-            all_translators.append(point - mtp[0])
-        return all_translators
-
-    vectorized_mtp = vec(mtp)
-
-    prev_target_indices = []
+def find_translators(mtp, vectorized_mtp, mtp_map, sorted_dataset):
+    target_indices = []
     for index_pair in mtp_map[vectorized_mtp[0]]:
-        prev_target_indices.append(index_pair[1])
+        target_indices.append(index_pair[1])
 
     for i in range(1, len(vectorized_mtp)):
         v = vectorized_mtp[i]
@@ -102,22 +96,22 @@ def find_translators(mtp, mtp_map, sorted_dataset):
         tmp_target_indices = []
         i = 0
         j = 0
-        while i < len(prev_target_indices) and j < len(index_pair_list):
-            if prev_target_indices[i] == index_pair_list[j][0]:
+        while i < len(target_indices) and j < len(index_pair_list):
+            if target_indices[i] == index_pair_list[j][0]:
                 tmp_target_indices.append(index_pair_list[j][1])
                 i += 1
                 j += 1
-            elif prev_target_indices[i] < index_pair_list[j][0]:
+            elif target_indices[i] < index_pair_list[j][0]:
                 i += 1
-            elif prev_target_indices[i] > index_pair_list[j][0]:
+            elif target_indices[i] > index_pair_list[j][0]:
                 j += 1
 
-        prev_target_indices = tmp_target_indices
+        target_indices = tmp_target_indices
 
     translators = []
     last_point = mtp[len(mtp) - 1]
 
-    for index in prev_target_indices:
+    for index in target_indices:
         p = sorted_dataset[index]
         translators.append(p - last_point)
 

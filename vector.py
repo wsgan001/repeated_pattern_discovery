@@ -1,20 +1,9 @@
-from random import randint
-
-
-def generate_random_numbers_for_hashing(n):
-    """ This is used for generating the random multipliers in range [0, 2^64) used for hashing. """
-    rand_vec = []
-    for _ in range(n):
-        rand_vec.append(randint(0, 2**64))
-    return rand_vec
+from random_multipliers import RandMult
 
 
 class Vector:
     """ Defines a vector and the operations required for expressing symbolic music
         data as vectors as defined in [Meredith2002] """
-
-    # Random numbers used in hashing of vectors. It is assumed that there are at most 20 dimensions.
-    hash_multipliers = generate_random_numbers_for_hashing(20)
 
     __components = []
     __hash_value = None
@@ -96,10 +85,10 @@ class Vector:
             this does not necessarily ensure strongly universal hashing. """
 
         if not self.__hash_value:
-            s = Vector.hash_multipliers[0]
+            s = RandMult().multiplier(0)
             i = 1
             for d in self.__components:
-                s += Vector.hash_multipliers[i] * d
+                s += RandMult().multiplier(i) * d
                 i += 1
 
             self.__hash_value = int(s % 2**64 / 2**31)
