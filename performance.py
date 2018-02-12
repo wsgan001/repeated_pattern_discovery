@@ -45,9 +45,13 @@ def measure_function_time_on_datasets(measured_function, dataset_information, da
 
     outputrows = []
 
+    datasets = []
     for dataset_name in dataset_information:
-        iterations = dataset_information[dataset_name]
-        dataset = Dataset(dataset_name)
+        datasets.append((Dataset(dataset_name), dataset_information[dataset_name]))
+
+    for dataset_pair in datasets:
+        iterations = dataset_pair[1]
+        dataset = dataset_pair[0]
         runtime, result = measure_function(measured_function, deepcopy(dataset), iterations, algorithm_name, printout=True)
         outputrows.append([algorithm_name, dataset.get_name(), str(len(dataset)), str(runtime), str(len(result))])
 

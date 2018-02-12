@@ -29,11 +29,13 @@ class Pattern:
             this does not necessarily ensure strongly universal hashing. """
 
         if not self._hash:
+            mult_ind = 0
             m = RandMult()
-            sum_val = m.multiplier(0)
+            sum_val = m.multiplier(mult_ind)
             for vec in self._points:
                 for i in range(vec.dimensionality()):
-                    sum_val += m.multiplier(i + 1) * vec[i]
+                    mult_ind += 1
+                    sum_val += m.multiplier(mult_ind) * vec[i]
 
             self._hash = int(sum_val % 2 ** 64 / 2 ** 31)
 

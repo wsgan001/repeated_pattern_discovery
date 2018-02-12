@@ -130,37 +130,40 @@ def create_mtp_count_maximizing_dataset(filename, n):
 
 
 def get_random_patterns_set():
-    rand_patterns = {'testfiles/random_patterns/rand_patterns_1000.csv': 3,
-                     'testfiles/random_patterns/rand_patterns_2000.csv': 3,
-                     'testfiles/random_patterns/rand_patterns_3000.csv': 3,
-                     'testfiles/random_patterns/rand_patterns_4000.csv': 3,
-                     'testfiles/random_patterns/rand_patterns_5000.csv': 3,
-                     'testfiles/random_patterns/rand_patterns_6000.csv': 2,
-                     'testfiles/random_patterns/rand_patterns_7000.csv': 2}
+    rand_patterns = {'testfiles/random_patterns/rand_patterns_500.csv': 1,
+                     'testfiles/random_patterns/rand_patterns_1000.csv': 1,
+                     'testfiles/random_patterns/rand_patterns_1500.csv': 1,
+                     'testfiles/random_patterns/rand_patterns_2000.csv': 1,
+                     'testfiles/random_patterns/rand_patterns_2500.csv': 1,
+                     'testfiles/random_patterns/rand_patterns_3000.csv': 1,
+                     'testfiles/random_patterns/rand_patterns_3500.csv': 1,
+                     'testfiles/random_patterns/rand_patterns_4000.csv': 1}
 
     return rand_patterns
 
 
 def get_mtp_count_max_dataset():
-    mtp_count_max = {'testfiles/mtp_count_max/mtp_count_max_1000.csv': 3,
-                     'testfiles/mtp_count_max/mtp_count_max_2000.csv': 3,
-                     'testfiles/mtp_count_max/mtp_count_max_3000.csv': 3,
-                     'testfiles/mtp_count_max/mtp_count_max_4000.csv': 3,
-                     'testfiles/mtp_count_max/mtp_count_max_5000.csv': 3,
-                     'testfiles/mtp_count_max/mtp_count_max_6000.csv': 2,
-                     'testfiles/mtp_count_max/mtp_count_max_7000.csv': 2}
+    mtp_count_max = {'testfiles/mtp_count_max/mtp_count_max_500.csv': 1,
+                     'testfiles/mtp_count_max/mtp_count_max_1000.csv': 1,
+                     'testfiles/mtp_count_max/mtp_count_max_1500.csv': 1,
+                     'testfiles/mtp_count_max/mtp_count_max_2000.csv': 1,
+                     'testfiles/mtp_count_max/mtp_count_max_2500.csv': 1,
+                     'testfiles/mtp_count_max/mtp_count_max_3000.csv': 1,
+                     'testfiles/mtp_count_max/mtp_count_max_3500.csv': 1,
+                     'testfiles/mtp_count_max/mtp_count_max_4000.csv': 1}
 
     return mtp_count_max
 
 
 def get_mtp_count_min_dataset():
-    mtp_count_min = {'testfiles/mtp_count_min/mtp_count_min_1000.csv': 3,
-                     'testfiles/mtp_count_min/mtp_count_min_2000.csv': 3,
-                     'testfiles/mtp_count_min/mtp_count_min_3000.csv': 3,
-                     'testfiles/mtp_count_min/mtp_count_min_4000.csv': 3,
-                     'testfiles/mtp_count_min/mtp_count_min_5000.csv': 3,
-                     'testfiles/mtp_count_min/mtp_count_min_6000.csv': 2,
-                     'testfiles/mtp_count_min/mtp_count_min_7000.csv': 2}
+    mtp_count_min = {'testfiles/mtp_count_min/mtp_count_min_500.csv': 1,
+                     'testfiles/mtp_count_min/mtp_count_min_1000.csv': 1,
+                     'testfiles/mtp_count_min/mtp_count_min_1500.csv': 1,
+                     'testfiles/mtp_count_min/mtp_count_min_2000.csv': 1,
+                     'testfiles/mtp_count_min/mtp_count_min_2500.csv': 1,
+                     'testfiles/mtp_count_min/mtp_count_min_3000.csv': 1,
+                     'testfiles/mtp_count_min/mtp_count_min_3500.csv': 1,
+                     'testfiles/mtp_count_min/mtp_count_min_4000.csv': 1}
 
     return mtp_count_min
 
