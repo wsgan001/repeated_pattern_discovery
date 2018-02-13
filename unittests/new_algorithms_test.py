@@ -48,7 +48,7 @@ class NewAlgorithmsTest(unittest.TestCase):
 
         self.assertTrue(results_match)
 
-    def test_siatec_with_data_from_meredith(self):
+    def test_siatech_with_data_from_meredith(self):
         dataset = Dataset('unittest_data/Meredith2002_fig11.csv')
         result = new_algorithms.siatech(dataset)
         exp_res = helpers.get_tecs_for_Meredith2002_fig11()

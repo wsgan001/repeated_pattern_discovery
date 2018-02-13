@@ -55,7 +55,6 @@ def siatech(d):
                 mtp_map[diff] = [(i, j)]
 
     tecs = []
-    single_point_pattern_handled = False
     handled_patterns = set()
 
     for diff_vec in mtp_map:
@@ -71,10 +70,9 @@ def siatech(d):
 
         if vectorized_pattern not in handled_patterns:
             translators = []
-            if len(pattern) == 1 and not single_point_pattern_handled:
+            if len(pattern) == 1:
                 for point in d:
                     translators.append(point - pattern[0])
-                single_point_pattern_handled = True
             else:
                 translators = find_translators(pattern, vectorized_pattern, mtp_map, d)
 
@@ -94,17 +92,17 @@ def find_translators(mtp, vectorized_mtp, mtp_map, sorted_dataset):
         index_pair_list = mtp_map[v]
 
         tmp_target_indices = []
-        i = 0
         j = 0
-        while i < len(target_indices) and j < len(index_pair_list):
-            if target_indices[i] == index_pair_list[j][0]:
-                tmp_target_indices.append(index_pair_list[j][1])
-                i += 1
+        k = 0
+        while j < len(target_indices) and k < len(index_pair_list):
+            if target_indices[j] == index_pair_list[k][0]:
+                tmp_target_indices.append(index_pair_list[k][1])
                 j += 1
-            elif target_indices[i] < index_pair_list[j][0]:
-                i += 1
-            elif target_indices[i] > index_pair_list[j][0]:
+                k += 1
+            elif target_indices[j] < index_pair_list[k][0]:
                 j += 1
+            elif target_indices[j] > index_pair_list[k][0]:
+                k += 1
 
         target_indices = tmp_target_indices
 
