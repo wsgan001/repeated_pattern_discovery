@@ -160,8 +160,7 @@ def compute_tecs(y, v, w, d):
             j += 1
 
         pattern = collect_pattern(pattern_indices, d)
-        # translators = find_translators(pattern_indices, w, len(d))
-        translators = find_trans2(pattern_indices, w, d)
+        translators = find_translators(pattern_indices, w, len(d))
         tecs.append(TEC(pattern, pattern_indices, translators))
 
         i += 1
@@ -179,36 +178,6 @@ def collect_pattern(pattern_indices, d):
     for i in pattern_indices:
         pattern.append(d[i])
     return pattern
-
-
-def find_trans2(pattern_ind, w, d):
-    """ After Meredith2016 """
-
-    if len(pattern_ind) == 1:
-        return []
-
-    r = [0]
-    for j in range(1, len(pattern_ind)):
-        r.append(0)
-
-    x = []
-    while r[0] <= len(d) - len(pattern_ind):
-        for j in range(1, len(pattern_ind)):
-            r[j] = r[0] + j
-        vec = w[pattern_ind[0]][r[0]][0]
-        found = False
-        for c_ind in range(1, len(pattern_ind)):
-            while r[c_ind] < len(d) and w[pattern_ind[c_ind]][r[c_ind]][0] < vec:
-                r[c_ind] += 1
-            if r[c_ind] >= len(d) or vec != w[pattern_ind[c_ind]][r[c_ind]][0]:
-                break
-            if c_ind == len(pattern_ind) - 1:
-                found = True
-        if found or len(pattern_ind) == 1:
-            x.append(vec)
-        r[0] += 1
-
-    return x
 
 
 def find_translators(pattern_indices, w, data_size):
