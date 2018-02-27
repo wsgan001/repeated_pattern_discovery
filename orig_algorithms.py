@@ -5,6 +5,8 @@ from operator import itemgetter
 from dataset import Dataset
 import heuristics
 from tec import TEC
+from new_algorithms import siatech
+from helpers import vec
 
 """ Implements SIA family of algorithms. """
 
@@ -90,17 +92,6 @@ def siatec(d):
     tecs = compute_tecs(x, v, w, d)
 
     return tecs
-
-
-def vec(p):
-    """ Computes the difference vectors between consecutive vectors
-        of the pattern as defined by the VEC function in [Meredith2002]. """
-
-    vec_p = []
-    for i in range(1, len(p)):
-        vec_p.append(p[i] - p[i - 1])
-
-    return vec_p
 
 
 def compute_x(d, v):
@@ -260,7 +251,6 @@ def siatec_compress(d):
     sort_tecs_by_quality(tecs, d)
     return compute_encoding(tecs, d)
 
-
 def remove_trans_eq_mtps(mcps):
     """ Removes translationally equivalent MTPs from mcps by
         removing redundant copies of MTPs that have the same
@@ -336,7 +326,9 @@ def compute_encoding(tecs, d):
             if dataset_covered:
                 break
 
-    # TODO: Add residual point set?
+    residual = set(d) - set(cover)
+    if residual:
+        best_tecs.append(TEC(list(residual), [], []))
 
     return best_tecs
 
@@ -360,6 +352,19 @@ def get_best_tec(p, d):
             best_tec = tec
         if is_better_tec(conj, best_tec, d):
             best_tec = conj
+
+    return best_tec
+
+
+def get_best_tech(p, d):
+    """ Finds the best TEC in p by using SIATECH.  """
+
+    tecs = siatech(p)
+    best_tec = None
+
+    for tec in tecs:
+        if not best_tec or is_better_tec(tec, best_tec, d):
+            best_tec = tec
 
     return best_tec
 
@@ -807,3 +812,51 @@ def is_dataset_covered(P, d):
             return False
 
     return True
+
+
+def siatech_compress(d):
+    """ Implements SIATECCompress as defined in [Meredith2016] but uses SIATECH. """
+
+    tecs = siatech(d)
+    sort_tecs_by_quality(tecs, d)
+
+    covered_points = set()
+    best_tecs = []
+    for tec in tecs:
+        new_points = tec.coverage() - covered_points
+        if len(new_points) > len(tec.get_pattern()) + len(tec.get_translators()):
+            best_tecs.append(tec)
+            covered_points = covered_points | tec.coverage()
+            if len(covered_points) == len(d):
+                break
+
+    residual = set(d) - set(covered_points)
+    if residual:
+        best_tecs.append(TEC(list(residual), [], []))
+
+    return best_tecs
+
+
+def cosiatech(d):
+    """ Implements COSIATEC with SIATECH. """
+
+    d = Dataset.sort_ascending(d)
+    p = deepcopy(d)
+    best_tecs = []
+
+    while p:
+        best_tec = get_best_tech(p, d)
+        best_tecs.append(best_tec)
+        p.remove_all(list(best_tec.coverage()))
+
+    return best_tecs
+
+
+def forths_algorithmh(d, c_min, sigma_min):
+    """ Implements Forth's algorithm [Forth2012], [Meredith2016].
+        Returns two lists of TECs, primary and secondary TECs. """
+
+    tecs = siatech(d)
+    tec_saliences = compute_tec_saliences(tecs, d)
+
+    return forth_cover(d, tecs, tec_saliences, c_min, sigma_min)

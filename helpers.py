@@ -4,6 +4,17 @@ from tec import TEC
 from dataset import Dataset
 
 
+def vec(p):
+    """ Computes the difference vectors between consecutive vectors
+        of the pattern as defined by the VEC function in [Meredith2002]. """
+
+    vec_p = []
+    for i in range(1, len(p)):
+        vec_p.append(p[i] - p[i - 1])
+
+    return vec_p
+
+
 def print_mtps(mtps):
     print('Printing MTPs count=' + str(len(mtps)))
     for mtp in mtps:
@@ -19,6 +30,7 @@ def print_mtps(mtps):
 
 
 def print_mtp_set_properties(mtps, dataset):
+    print('Dataset:', dataset.get_name(), '(n = ' + str(len(dataset)) + ')')
     print('Number of MTPs:', len(mtps))
     print('Max number of MTPs in dataset:', int(len(dataset) * (len(dataset) - 1) / 2))
     print('Min number of MTPs in dataset:', len(dataset) - 1)
@@ -56,10 +68,18 @@ def mtp_sets_are_same(mtps1, mtps2):
 
 def tec_sets_are_same(tecs1, tecs2):
 
-    covered_sets1 = get_covered_sets_of_tec_list(tecs1)
-    covered_sets2 = get_covered_sets_of_tec_list(tecs2)
+    if len(tecs1) != len(tecs2):
+        return False
 
-    return covered_sets1 == covered_sets2
+    for t1 in tecs1:
+        if t1 not in tecs2:
+            return False
+
+    for t2 in tecs2:
+        if t2 not in tecs1:
+            return False
+
+    return True
 
 
 def get_covered_sets_of_tec_list(tecs):
@@ -68,6 +88,8 @@ def get_covered_sets_of_tec_list(tecs):
         cov_list = list(t.coverage())
         cov_list.sort()
         covered_sets.append(cov_list)
+
+    covered_sets.sort()
 
     return covered_sets
 

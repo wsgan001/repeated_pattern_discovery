@@ -23,6 +23,14 @@ class TEC:
     def get_translators(self):
         return self._translators
 
+    def __lt__(self, other):
+        if len(self._pattern) < len(other.get_pattern()):
+            return True
+        if len(self._pattern) > len(other.get_pattern()):
+            return False
+
+        return self._pattern < other.get_pattern()
+
     def __str__(self):
         self._pattern.sort()
         self._translators.sort()
@@ -32,18 +40,10 @@ class TEC:
         if len(self.get_pattern()) != len(other.get_pattern()):
             return False
 
-        for point in self.get_pattern():
-            if point not in other.get_pattern():
-                return False
-
         if len(self.get_translators()) != len(other.get_translators()):
             return False
 
-        for trans in self.get_translators():
-            if trans not in other.get_translators():
-                return False
-
-        return True
+        return self.coverage() == other.coverage()
 
     def get_bounding_box(self):
         """ Returns the vectors that limit the minimum bounding box of

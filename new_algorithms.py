@@ -1,9 +1,9 @@
-from orig_algorithms import vec
-from orig_algorithms import siatec
-from orig_algorithms import sort_tecs_by_quality
+from helpers import vec
 from dataset import Dataset
 from tec import TEC
 from pattern import Pattern
+import heuristics
+from sys import maxsize
 
 
 def siah(d):
@@ -116,37 +116,65 @@ def find_translators(mtp, vectorized_mtp, mtp_map, sorted_dataset):
     return translators
 
 
-def cosiatech(d):
-    tecs = siatec(d)
-    sort_tecs_by_quality(tecs, d)
+def siatechf(d, min_cr):
+    """ Siatech that only returns TECs that have compression ratio of at least min_cr. """
+    d = Dataset.sort_ascending(d)
+    # Map of difference vector, index list pairs.
+    mtp_map = {}
 
-    best_tecs = []
-    covered_points = set() # This is unnecessary, could be implemented by just looking at the indexes in the sorted d
-    for i in range(len(tecs)):
-        tec = tecs[i]
+    # Compute the difference vectors between points and add both
+    # the starting and ending index as pair to the lists corresponding to the
+    # difference vector.
+    for i in range(len(d)):
+        for j in range(i + 1, len(d)):
+            diff = d[j] - d[i]
+            if diff in mtp_map:
+                mtp_map[diff].append((i, j))
+            else:
+                mtp_map[diff] = [(i, j)]
 
-        contains_new_points = True
-        covered_set = tec.coverage()
+    tecs = []
+    handled_patterns = set()
 
-        for point in covered_set:
-            if point in covered_points:
-                contains_new_points = False
-                break
+    for diff_vec in mtp_map:
+        pattern = []
+        pattern_indices = []
+        mtp = mtp_map[diff_vec]
 
-        if contains_new_points:
-            best_tecs.append(tec)
-            for point in covered_set:
-                covered_points.add(point)
+        for index_pair in mtp:
+            pattern_indices.append(index_pair[0])
+            pattern.append(d[index_pair[0]])
 
-        if len(covered_set) == len(d):
-            break
+        vectorized_pattern = Pattern(vec(pattern))
 
-    residual_points = []
-    for p in d:
-        if p not in covered_points:
-            residual_points.append(p)
+        if vectorized_pattern not in handled_patterns:
+            if cr_upper_bound(pattern, mtp_map, d) >= min_cr:
+                translators = []
+                if len(pattern) == 1:
+                    for point in d:
+                        translators.append(point - pattern[0])
+                else:
+                    translators = find_translators(pattern, vectorized_pattern, mtp_map, d)
 
-    best_tecs.append(TEC(residual_points, [], []))
+                tec = TEC(pattern, pattern_indices, translators)
 
-    return best_tecs
+                if heuristics.compression_ratio(tec) >= min_cr:
+                    tecs.append(tec)
 
+            handled_patterns.add(vectorized_pattern)
+
+    return tecs
+
+
+def cr_upper_bound(pattern, mtp_map, dataset):
+    vec_pat = vec(pattern)
+    if len(pattern) > 1:
+        vec_pat.append(pattern[len(pattern) - 1] - pattern[0])
+    min_occ = maxsize
+    for v in vec_pat:
+        if len(mtp_map[v]) < min_occ:
+            min_occ = len(mtp_map[v])
+
+    transl_bound = min(min_occ, len(dataset) - len(pattern) + 1)
+
+    return len(pattern)*transl_bound / (len(pattern) + transl_bound - 1)

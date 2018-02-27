@@ -33,6 +33,9 @@ def bounding_box_compactness(tec, sorted_dataset):
         if is_within_bb(p, max_vector, min_vector):
             num_points_in_bb += 1
 
+    if num_points_in_bb == 0:
+        return 0
+
     return pattern_size / num_points_in_bb
 
 
