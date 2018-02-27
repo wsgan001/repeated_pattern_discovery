@@ -198,7 +198,7 @@ def get_bach_wtk_datasets():
 
 
 def main():
-    pass
+    create_random_datafiles((100, 5000), 100, 2)
 
 
 if __name__ == '__main__':
