@@ -135,9 +135,7 @@ def get_random_patterns_set():
                      'testfiles/random_patterns/rand_patterns_1500.csv': 1,
                      'testfiles/random_patterns/rand_patterns_2000.csv': 1,
                      'testfiles/random_patterns/rand_patterns_2500.csv': 1,
-                     'testfiles/random_patterns/rand_patterns_3000.csv': 1,
-                     'testfiles/random_patterns/rand_patterns_3500.csv': 1,
-                     'testfiles/random_patterns/rand_patterns_4000.csv': 1}
+                     'testfiles/random_patterns/rand_patterns_3000.csv': 1}
 
     return rand_patterns
 
@@ -198,7 +196,7 @@ def get_bach_wtk_datasets():
 
 
 def main():
-    create_random_datafiles((100, 5000), 100, 2)
+    create_random_datafiles((5000, 8000), 500, 2)
 
 
 if __name__ == '__main__':
