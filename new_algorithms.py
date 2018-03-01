@@ -148,18 +148,18 @@ def siatechf(d, min_cr):
         vectorized_pattern = Pattern(vec(pattern))
 
         if vectorized_pattern not in handled_patterns:
-            # if cr_upper_bound(pattern, mtp_map, d) >= min_cr:
-            translators = []
-            if len(pattern) == 1:
-                for point in d:
-                    translators.append(point - pattern[0])
-            else:
-                translators = find_translators(pattern, vectorized_pattern, mtp_map, d)
+            if cr_upper_bound(pattern, mtp_map, d) >= min_cr:
+                translators = []
+                if len(pattern) == 1:
+                    for point in d:
+                        translators.append(point - pattern[0])
+                else:
+                    translators = find_translators(pattern, vectorized_pattern, mtp_map, d)
 
-            tec = TEC(pattern, pattern_indices, translators)
+                tec = TEC(pattern, pattern_indices, translators)
 
-            if heuristics.compression_ratio(tec) >= min_cr:
-                tecs.append(tec)
+                if heuristics.compression_ratio(tec) >= min_cr:
+                    tecs.append(tec)
 
             handled_patterns.add(vectorized_pattern)
 

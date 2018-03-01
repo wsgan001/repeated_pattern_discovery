@@ -41,22 +41,7 @@ def measure_filtering_algorithms():
 
 
 def main():
-    datasets = {'testfiles/random_patterns/rand_patterns_500.csv': 1,
-                     'testfiles/random_patterns/rand_patterns_1000.csv': 1,
-                     'testfiles/random_patterns/rand_patterns_1500.csv': 1,
-                     'testfiles/random_patterns/rand_patterns_2000.csv': 1,
-                     'testfiles/random_patterns/rand_patterns_2500.csv': 1,
-                     'testfiles/random_patterns/rand_patterns_3000.csv': 1,
-                     'testfiles/random_patterns/rand_patterns_3500.csv': 1,
-                     'testfiles/random_patterns/rand_patterns_4000.csv': 1,
-                     'testfiles/random_patterns/rand_patterns_4500.csv': 1,
-                     'testfiles/random_patterns/rand_patterns_5000.csv': 1,
-                     'testfiles/random_patterns/rand_patterns_5500.csv': 1,
-                     'testfiles/random_patterns/rand_patterns_6000.csv': 1}
-
-    cr_th = 2
-    performance.measure_function_time_on_datasets(lambda d: new_algorithms.siatechf(d, cr_th), datasets,
-                                                  'random_patterns', algorithm_name='siatech_pf')
+    measure_filtering_algorithms()
 
 
 if __name__ == "__main__":
