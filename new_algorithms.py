@@ -82,6 +82,52 @@ def siatech(d):
     return tecs
 
 
+def siatech_pf(d, c_min):
+    d = Dataset.sort_ascending(d)
+    # Map of difference vector, index list pairs.
+    mtp_map = {}
+
+    # Compute the difference vectors between points and add both
+    # the starting and ending index as pair to the lists corresponding to the
+    # difference vector.
+    for i in range(len(d)):
+        for j in range(i + 1, len(d)):
+            diff = d[j] - d[i]
+            if diff in mtp_map:
+                mtp_map[diff].append((i, j))
+            else:
+                mtp_map[diff] = [(i, j)]
+
+    tecs = []
+    handled_patterns = set()
+
+    for diff_vec in mtp_map:
+        pattern = []
+        pattern_indices = []
+        mtp = mtp_map[diff_vec]
+
+        for index_pair in mtp:
+            pattern_indices.append(index_pair[0])
+            pattern.append(d[index_pair[0]])
+
+        vectorized_pattern = Pattern(vec(pattern))
+
+        if vectorized_pattern not in handled_patterns:
+            translators = []
+            if len(pattern) == 1:
+                for point in d:
+                    translators.append(point - pattern[0])
+            else:
+                translators = find_translators(pattern, vectorized_pattern, mtp_map, d)
+
+            tec = TEC(pattern, pattern_indices, translators)
+            if heuristics.compression_ratio(tec) >= c_min:
+                tecs.append(tec)
+
+            handled_patterns.add(vectorized_pattern)
+
+    return tecs
+
 def find_translators(mtp, vectorized_mtp, mtp_map, sorted_dataset):
     target_indices = []
     for index_pair in mtp_map[vectorized_mtp[0]]:

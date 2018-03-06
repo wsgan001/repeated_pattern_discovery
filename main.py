@@ -9,19 +9,22 @@ import helpers
 
 
 def measure_siatech_siatechf():
-    datasets = dataset_generation.get_random_patterns_set()
+    datasets = {'testfiles/random_patterns/rand_patterns_1000.csv': 1,
+                'testfiles/random_patterns/rand_patterns_2000.csv': 1,
+                'testfiles/random_patterns/rand_patterns_3000.csv': 1,
+                'testfiles/random_patterns/rand_patterns_4000.csv': 1,
+                'testfiles/random_patterns/rand_patterns_5000.csv': 1,
+                'testfiles/random_patterns/rand_patterns_6000.csv': 1}
 
     performance.measure_function_time_on_datasets(new_algorithms.siatech, datasets, 'random_patterns')
 
-    cr_th = 2
+    cr_th = 3
     performance.measure_function_time_on_datasets(lambda d: new_algorithms.siatechf(d, cr_th), datasets,
                                                   'random_patterns', algorithm_name='siatechf(th=' + str(cr_th) + ')')
+    performance.measure_function_time_on_datasets(lambda d: new_algorithms.siatech_pf(d, cr_th), datasets,
+                                                  'random_patterns', algorithm_name='siatech_pf(th=' + str(cr_th) + ')')
 
-    cr_th = 4
-    performance.measure_function_time_on_datasets(lambda d: new_algorithms.siatechf(d, cr_th), datasets,
-                                                  'random_patterns', algorithm_name='siatechf(th=' + str(cr_th) + ')')
-
-    cr_th = 6
+    cr_th = 5
     performance.measure_function_time_on_datasets(lambda d: new_algorithms.siatechf(d, cr_th), datasets,
                                                   'random_patterns', algorithm_name='siatechf(th=' + str(cr_th) + ')')
 
@@ -86,7 +89,7 @@ def measure_filtering_algorithm_outputs():
 
 
 def main():
-    measure_filtering_algorithm_outputs()
+    measure_siatech_siatechf()
 
 
 if __name__ == "__main__":
