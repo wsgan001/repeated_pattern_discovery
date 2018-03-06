@@ -166,6 +166,68 @@ def siatechf(d, min_cr):
     return tecs
 
 
+def siatechf_with_printouts(d, min_cr):
+    """ Siatech that only returns TECs that have compression ratio of at least min_cr. """
+    d = Dataset.sort_ascending(d)
+    # Map of difference vector, index list pairs.
+    mtp_map = {}
+
+    # Compute the difference vectors between points and add both
+    # the starting and ending index as pair to the lists corresponding to the
+    # difference vector.
+    for i in range(len(d)):
+        for j in range(i + 1, len(d)):
+            diff = d[j] - d[i]
+            if diff in mtp_map:
+                mtp_map[diff].append((i, j))
+            else:
+                mtp_map[diff] = [(i, j)]
+
+    tecs = []
+    handled_patterns = set()
+    transd_mtps = 0
+    prefiltered = 0
+    postfiltered = 0
+
+    for diff_vec in mtp_map:
+        pattern = []
+        pattern_indices = []
+        mtp = mtp_map[diff_vec]
+
+        for index_pair in mtp:
+            pattern_indices.append(index_pair[0])
+            pattern.append(d[index_pair[0]])
+
+        vectorized_pattern = Pattern(vec(pattern))
+
+        if vectorized_pattern not in handled_patterns:
+            transd_mtps += 1
+            if cr_upper_bound(pattern, mtp_map, d) >= min_cr:
+                translators = []
+                if len(pattern) == 1:
+                    for point in d:
+                        translators.append(point - pattern[0])
+                else:
+                    translators = find_translators(pattern, vectorized_pattern, mtp_map, d)
+
+                tec = TEC(pattern, pattern_indices, translators)
+
+                if heuristics.compression_ratio(tec) >= min_cr:
+                    tecs.append(tec)
+                else:
+                    postfiltered += 1
+            else:
+                prefiltered += 1
+
+            handled_patterns.add(vectorized_pattern)
+
+    print('Transl distinct mtps:', transd_mtps)
+    print('Prefiltered:', prefiltered)
+    print('Postfiltered:', postfiltered)
+
+    return tecs
+
+
 def cr_upper_bound(pattern, mtp_map, dataset):
     vec_pat = vec(pattern)
     if len(pattern) > 1:
