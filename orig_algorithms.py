@@ -8,7 +8,7 @@ from tec import TEC
 from new_algorithms import siatech
 from helpers import vec
 
-""" Implements SIA family of algorithms. """
+""" Contains implementations of algorithms based on SIA [Meredith2002]. """
 
 
 def sia(d):
@@ -238,7 +238,8 @@ def cosiatec(d):
 
 
 def siatec_compress(d):
-    """ Implements the SIATECCompress algorithm described in [Meredith2013]. """
+    """ Implements the SIATECCompress algorithm described in [Meredith2013].
+        Removing redundant translators is not implemented as its implementation is not described in [Meredith2013]. """
 
     d = Dataset.sort_ascending(d)
     v, w = compute_vector_tables(d)
@@ -246,10 +247,9 @@ def siatec_compress(d):
     remove_trans_eq_mtps(mcps)
     tecs = compute_tecs_from_mcps(d, w, mcps)
     add_conjugate_tecs(tecs, d)
-    for tec in tecs:
-        rem_red_tran(tec)
     sort_tecs_by_quality(tecs, d)
     return compute_encoding(tecs, d)
+
 
 def remove_trans_eq_mtps(mcps):
     """ Removes translationally equivalent MTPs from mcps by
@@ -345,8 +345,6 @@ def get_best_tec(p, d):
         mtp_indices = mcp[1]
         tec = get_tec_for_mtp(mtp_indices, w, p)
         conj = get_conj(tec, d)
-        rem_red_tran(tec)
-        rem_red_tran(conj)
 
         if not best_tec or is_better_tec(tec, best_tec, d):
             best_tec = tec
@@ -475,11 +473,6 @@ def get_conj(tec, sorted_dataset):
     conj_tec = TEC(p_prime, conj_tec_pattern_ind, v_prime)
 
     return conj_tec
-
-
-def rem_red_tran(tec):
-    # TODO: Find a way to implement this.
-    pass
 
 
 def is_better_tec(tec1, tec2, sorted_dataset):

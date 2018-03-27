@@ -6,10 +6,13 @@ import heuristics
 from sys import maxsize
 
 
+""" Contains algorithms that use hashing to improve the runtime of MTP and TEC computation. """
+
+
 def siah(d):
     """ Computes the MTPs of dataset d.
         Uses a dictionary/map to avoid having to sort the
-        set of difference vectors. Runs in O(kn^2) average time. """
+        set of difference vectors. Runs in O(kn^2) expected time. """
 
     d = Dataset.sort_ascending(d)
     # Dictionary of difference vector, index list pairs.
@@ -74,7 +77,7 @@ def siatech(d):
                 for point in d:
                     translators.append(point - pattern[0])
             else:
-                translators = find_translators(pattern, vectorized_pattern, mtp_map, d)
+                translators = find_translators_h(pattern, vectorized_pattern, mtp_map, d)
 
             tecs.append(TEC(pattern, pattern_indices, translators))
             handled_patterns.add(vectorized_pattern)
@@ -83,6 +86,9 @@ def siatech(d):
 
 
 def siatech_pf(d, c_min):
+    """ SIATECH that only returns TECs with compression ratio of at least c_min.
+        Computes all TECs and filters out those with insufficient compression ratio (postfiltering). """
+
     d = Dataset.sort_ascending(d)
     # Map of difference vector, index list pairs.
     mtp_map = {}
@@ -118,7 +124,7 @@ def siatech_pf(d, c_min):
                 for point in d:
                     translators.append(point - pattern[0])
             else:
-                translators = find_translators(pattern, vectorized_pattern, mtp_map, d)
+                translators = find_translators_h(pattern, vectorized_pattern, mtp_map, d)
 
             tec = TEC(pattern, pattern_indices, translators)
             if heuristics.compression_ratio(tec) >= c_min:
@@ -128,7 +134,8 @@ def siatech_pf(d, c_min):
 
     return tecs
 
-def find_translators(mtp, vectorized_mtp, mtp_map, sorted_dataset):
+
+def find_translators_h(mtp, vectorized_mtp, mtp_map, sorted_dataset):
     target_indices = []
     for index_pair in mtp_map[vectorized_mtp[0]]:
         target_indices.append(index_pair[1])
@@ -163,7 +170,7 @@ def find_translators(mtp, vectorized_mtp, mtp_map, sorted_dataset):
 
 
 def siatechf(d, min_cr):
-    """ Siatech that only returns TECs that have compression ratio of at least min_cr. """
+    """ SIATECH that only returns TECs that have compression ratio of at least min_cr. """
     d = Dataset.sort_ascending(d)
     # Map of difference vector, index list pairs.
     mtp_map = {}
@@ -200,7 +207,7 @@ def siatechf(d, min_cr):
                     for point in d:
                         translators.append(point - pattern[0])
                 else:
-                    translators = find_translators(pattern, vectorized_pattern, mtp_map, d)
+                    translators = find_translators_h(pattern, vectorized_pattern, mtp_map, d)
 
                 tec = TEC(pattern, pattern_indices, translators)
 
@@ -208,73 +215,13 @@ def siatechf(d, min_cr):
                     tecs.append(tec)
 
             handled_patterns.add(vectorized_pattern)
-
-    return tecs
-
-
-def siatechf_with_printouts(d, min_cr):
-    """ Siatech that only returns TECs that have compression ratio of at least min_cr. """
-    d = Dataset.sort_ascending(d)
-    # Map of difference vector, index list pairs.
-    mtp_map = {}
-
-    # Compute the difference vectors between points and add both
-    # the starting and ending index as pair to the lists corresponding to the
-    # difference vector.
-    for i in range(len(d)):
-        for j in range(i + 1, len(d)):
-            diff = d[j] - d[i]
-            if diff in mtp_map:
-                mtp_map[diff].append((i, j))
-            else:
-                mtp_map[diff] = [(i, j)]
-
-    tecs = []
-    handled_patterns = set()
-    transd_mtps = 0
-    prefiltered = 0
-    postfiltered = 0
-
-    for diff_vec in mtp_map:
-        pattern = []
-        pattern_indices = []
-        mtp = mtp_map[diff_vec]
-
-        for index_pair in mtp:
-            pattern_indices.append(index_pair[0])
-            pattern.append(d[index_pair[0]])
-
-        vectorized_pattern = Pattern(vec(pattern))
-
-        if vectorized_pattern not in handled_patterns:
-            transd_mtps += 1
-            if cr_upper_bound(pattern, mtp_map, d) >= min_cr:
-                translators = []
-                if len(pattern) == 1:
-                    for point in d:
-                        translators.append(point - pattern[0])
-                else:
-                    translators = find_translators(pattern, vectorized_pattern, mtp_map, d)
-
-                tec = TEC(pattern, pattern_indices, translators)
-
-                if heuristics.compression_ratio(tec) >= min_cr:
-                    tecs.append(tec)
-                else:
-                    postfiltered += 1
-            else:
-                prefiltered += 1
-
-            handled_patterns.add(vectorized_pattern)
-
-    print('Transl distinct mtps:', transd_mtps)
-    print('Prefiltered:', prefiltered)
-    print('Postfiltered:', postfiltered)
 
     return tecs
 
 
 def cr_upper_bound(pattern, mtp_map, dataset):
+    """" Computes an upper bound on the compression ratio of pattern. """
+
     vec_pat = vec(pattern)
     if len(pattern) > 1:
         vec_pat.append(pattern[len(pattern) - 1] - pattern[0])

@@ -2,6 +2,7 @@ from vector import Vector
 
 
 class TEC:
+    """ Class for Translational Equivalence Class [Meredith2002]. """
 
     _pattern = []
     _pattern_indices = []
@@ -46,7 +47,7 @@ class TEC:
         return self.coverage() == other.coverage()
 
     def get_bounding_box(self):
-        """ Returns the vectors that limit the minimum bounding box of
+        """ Returns the vectors that limit the minimum axis aligned bounding box of
             the pattern of the TEC.
             Returns two vectors: min_vector, max_vector """
 

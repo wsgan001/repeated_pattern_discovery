@@ -4,11 +4,14 @@ from copy import deepcopy
 
 
 class Dataset:
+    """ Class for representing a multidimensional dataset. """
 
     _vectors = []
     _name = ''
 
     def __init__(self, filename):
+        """ Create a multidimensional dataset by reading the vectors from a .csv file. """
+
         self._vectors = self.dataset_from_file(filename)
 
         split_path = filename.split('/')

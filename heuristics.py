@@ -1,4 +1,3 @@
-
 def bounding_box_compactness(tec, sorted_dataset):
     """ Computes the fraction of points belonging to the pattern in
         the closed minimum bounding box of the pattern. """
@@ -40,8 +39,7 @@ def bounding_box_compactness(tec, sorted_dataset):
 
 
 def find_pattern_indices(pattern, sorted_dataset):
-    """ Find the beginning and end indices of the pattern for compactness computation.
-        TODO: This could use binary search. """
+    """ Find the beginning and end indices of the pattern for compactness computation. """
 
     first = pattern[0]
     last = pattern[len(pattern) - 1]
@@ -81,10 +79,6 @@ def is_within_bb(point, max_vector, min_vector):
             return False
 
     return True
-
-
-def convex_hull_compactness(pattern_indices, sorted_dataset):
-    return 1
 
 
 def compression_ratio(tec):

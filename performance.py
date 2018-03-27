@@ -6,6 +6,8 @@ from operator import itemgetter
 
 
 def measure_function(measured_function, input_data, iterations, algorithm_name='', printout=True):
+    """ Measures the average runtime of a function.
+        measured_function is run on input_data iterations number of times to compute the average runtime. """
     times = []
 
     for _ in range(iterations):
@@ -31,6 +33,7 @@ def measure_function(measured_function, input_data, iterations, algorithm_name='
 
 
 def measure_time(measured_function, input_data):
+    """ Measure the execution time of measured_function on input_data. """
     start = time.time()
     result = measured_function(input_data)
     end = time.time()
@@ -39,6 +42,10 @@ def measure_time(measured_function, input_data):
 
 
 def measure_function_time_on_datasets(measured_function, dataset_information, dataset_type, algorithm_name=''):
+    """ Measure function runtime on multiple datasets and output the measurements into a csv file.
+        dataset_information is a dictionary, where the keys are the input file paths and the values are the number
+        of repetitions to run on that dataset.
+        dataset_type is a string that is used as a part of the output filename. """
 
     if algorithm_name == '':
         algorithm_name = measured_function.__name__
